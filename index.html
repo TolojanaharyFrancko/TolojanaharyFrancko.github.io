@@ -153,7 +153,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600">Réservations aujourd'hui</p>
-                                <p class="text-3xl font-bold text-blue-600" id="todayReservations">8</p>
+                                <p class="text-3xl font-bold text-blue-600" id="todayReservations">0</p>
                             </div>
                             <div class="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-calendar-check text-blue-600 text-xl"></i>
@@ -165,7 +165,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600">Recettes du jour</p>
-                                <p class="text-3xl font-bold text-green-600" id="todayRevenue">1,250€</p>
+                                <p class="text-3xl font-bold text-green-600" id="todayRevenue">0€</p>
                             </div>
                             <div class="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-euro-sign text-green-600 text-xl"></i>
@@ -177,7 +177,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600">Dépenses du jour</p>
-                                <p class="text-3xl font-bold text-red-600" id="todayExpenses">180€</p>
+                                <p class="text-3xl font-bold text-red-600" id="todayExpenses">0€</p>
                             </div>
                             <div class="bg-red-100 w-12 h-12 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-minus-circle text-red-600 text-xl"></i>
@@ -189,7 +189,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600">Solde caisse</p>
-                                <p class="text-3xl font-bold text-purple-600" id="cashBalance">2,870€</p>
+                                <p class="text-3xl font-bold text-purple-600" id="cashBalance">0€</p>
                             </div>
                             <div class="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-wallet text-purple-600 text-xl"></i>
@@ -791,8 +791,8 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Montant (€)</label>
-                    <input type="number" id="reservationAmount" step="0.01" value="25" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <p class="text-xs text-gray-500 mt-1">25€ par créneau de 30 minutes</p>
+                    <input type="number" id="reservationAmount" step="0.01" value="30" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <p class="text-xs text-gray-500 mt-1">30€ par créneau de 30 minutes</p>
                 </div>
                 
                 <div class="flex items-center space-x-2">
@@ -846,70 +846,8 @@
         }
 
         function initializeSampleData() {
-            if (clients.length === 0) {
-                // Add sample clients
-                clients = [
-                    { 
-                        id: 1, 
-                        name: 'Jean Dupont', 
-                        phone: '0123456789', 
-                        email: 'jean.dupont@email.com',
-                        address: '123 Rue de la Paix, 75001 Paris',
-                        birthDate: '1985-03-15',
-                        notes: 'Client régulier, préfère les créneaux du soir',
-                        createdAt: '2024-01-15'
-                    },
-                    { 
-                        id: 2, 
-                        name: 'Marie Martin', 
-                        phone: '0987654321', 
-                        email: 'marie.martin@email.com',
-                        address: '456 Avenue des Champs, 75008 Paris',
-                        birthDate: '1990-07-22',
-                        notes: 'Joue en équipe avec ses collègues',
-                        createdAt: '2024-01-20'
-                    },
-                    { 
-                        id: 3, 
-                        name: 'Pierre Durand', 
-                        phone: '0147258369', 
-                        email: 'pierre.durand@email.com',
-                        address: '789 Boulevard Saint-Germain, 75006 Paris',
-                        birthDate: '1988-11-10',
-                        notes: 'Paiement toujours en espèces',
-                        createdAt: '2024-02-01'
-                    }
-                ];
-                localStorage.setItem('clients', JSON.stringify(clients));
-            }
-
-            if (reservations.length === 0) {
-                // Add sample reservations
-                const today = new Date().toISOString().split('T')[0];
-                reservations = [
-                    { id: 1, date: today, time: '08:00-08:30', clientId: 1, client: 'Jean Dupont', phone: '0123456789', amount: 25, paid: true },
-                    { id: 2, date: today, time: '08:30-09:00', clientId: 1, client: 'Jean Dupont', phone: '0123456789', amount: 25, paid: true, isConsecutive: true, consecutiveGroup: 1, slotNumber: 2, totalSlots: 2 },
-                    { id: 3, date: today, time: '10:00-10:30', clientId: 2, client: 'Marie Martin', phone: '0987654321', amount: 25, paid: true },
-                    { id: 4, date: today, time: '14:00-14:30', clientId: 3, client: 'Pierre Durand', phone: '0147258369', amount: 25, paid: false },
-                ];
-                // Update first reservation to be consecutive
-                reservations[0].isConsecutive = true;
-                reservations[0].consecutiveGroup = 1;
-                reservations[0].slotNumber = 1;
-                reservations[0].totalSlots = 2;
-                localStorage.setItem('reservations', JSON.stringify(reservations));
-            }
-
-            if (transactions.length === 0) {
-                // Add sample transactions
-                const today = new Date().toISOString().split('T')[0];
-                transactions = [
-                    { id: 1, date: today, type: 'income', description: 'Réservation Jean Dupont (2 créneaux)', amount: 50, category: 'reservation' },
-                    { id: 3, date: today, type: 'income', description: 'Réservation Marie Martin', amount: 25, category: 'reservation' },
-                    { id: 5, date: today, type: 'expense', description: 'Achat ballons', amount: 30, category: 'equipement' },
-                ];
-                localStorage.setItem('transactions', JSON.stringify(transactions));
-            }
+            // L'application démarre maintenant avec une base de données vierge
+            // Aucune donnée d'exemple n'est ajoutée automatiquement
         }
 
         function login(event) {
@@ -950,6 +888,10 @@
                 if (role === 'proprietaire') {
                     document.getElementById('statsLink').classList.remove('hidden');
                     document.getElementById('adminLink').classList.remove('hidden');
+                } else {
+                    // Hide admin features for receptionniste
+                    document.getElementById('statsLink').classList.add('hidden');
+                    document.getElementById('adminLink').classList.add('hidden');
                 }
                 
                 document.getElementById('loginPage').classList.add('hidden');
@@ -976,6 +918,7 @@
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('statsLink').classList.add('hidden');
+            document.getElementById('adminLink').classList.add('hidden');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
         }
@@ -1229,7 +1172,7 @@
 
         function updateReservationAmount() {
             const slots = parseInt(document.getElementById('consecutiveSlots').value);
-            const pricePerSlot = 25;
+            const pricePerSlot = 30;
             document.getElementById('reservationAmount').value = slots * pricePerSlot;
         }
 
@@ -2938,8 +2881,7 @@ Voulez-vous continuer ?`;
                         logActivity('🔄 RÉINITIALISATION COMPLÈTE', 
                             `Suppression de ${statsBeforeReset.reservations} réservations, ${statsBeforeReset.transactions} transactions, ${statsBeforeReset.clients} clients`);
                         
-                        // Réinitialiser avec des données d'exemple fraîches
-                        initializeSampleData();
+                        // L'application reste vierge après réinitialisation
                         
                         // Mettre à jour l'affichage
                         updateDataStats();
@@ -3077,5 +3019,5 @@ L'application a été réinitialisée avec des données d'exemple.`);
         document.getElementById('historyFilter').addEventListener('change', loadHistorique);
         document.getElementById('periodFilter').addEventListener('change', updatePeriodInputs);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d5dce6d17cbbf0',t:'MTc1NDg5NTY5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d62e395006c89d',t:'MTc1NDg5OTAzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
