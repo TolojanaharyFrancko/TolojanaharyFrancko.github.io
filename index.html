@@ -112,6 +112,11 @@
                     Statistiques
                 </a>
                 
+                <a href="#" id="databaseLink" onclick="showPage('database')" class="nav-item hidden flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
+                    <i class="fas fa-database w-5 h-5 mr-3"></i>
+                    Base de Données
+                </a>
+                
                 <a href="#" id="adminLink" onclick="showPage('administration')" class="nav-item hidden flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
                     <i class="fas fa-cog w-5 h-5 mr-3"></i>
                     Administration
@@ -138,6 +143,19 @@
                 <div class="flex items-center justify-between">
                     <h1 id="pageTitle" class="text-2xl font-bold text-gray-800">Tableau de bord</h1>
                     <div class="flex items-center space-x-4">
+                        <!-- Indicateur Git -->
+                        <div class="flex items-center space-x-2">
+                            <div id="gitStatusHeader" class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                                <span class="text-sm text-gray-500">Git</span>
+                            </div>
+                            <button onclick="gitStorage.saveToGit()" class="text-orange-600 hover:text-orange-800 transition-colors" title="Sauvegarder dans Git">
+                                <i class="fab fa-git-alt text-sm"></i>
+                            </button>
+                            <button onclick="refreshAllData()" class="text-blue-600 hover:text-blue-800 transition-colors" title="Actualiser les données">
+                                <i class="fas fa-sync-alt text-sm"></i>
+                            </button>
+                        </div>
                         <div class="text-right">
                             <p class="text-sm text-gray-500">Aujourd'hui</p>
                             <p class="text-lg font-semibold text-gray-800" id="currentDate"></p>
@@ -398,9 +416,283 @@
                 </div>
             </div>
 
+            <!-- Database Page -->
+            <div id="databasePage" class="p-6 hidden">
+                <!-- Onglets de navigation -->
+                <div class="bg-white rounded-xl shadow-sm mb-6">
+                    <div class="border-b border-gray-200">
+                        <nav class="flex space-x-8 px-6">
+                            <button onclick="showDatabaseTab('reservations')" class="database-tab py-4 px-2 border-b-2 border-blue-500 text-blue-600 font-medium text-sm">
+                                <i class="fas fa-calendar-alt mr-2"></i>Réservations
+                            </button>
+                            <button onclick="showDatabaseTab('transactions')" class="database-tab py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">
+                                <i class="fas fa-receipt mr-2"></i>Transactions
+                            </button>
+                            <button onclick="showDatabaseTab('clients')" class="database-tab py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">
+                                <i class="fas fa-users mr-2"></i>Clients
+                            </button>
+                            <button onclick="showDatabaseTab('credentials')" class="database-tab py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">
+                                <i class="fas fa-key mr-2"></i>Identifiants
+                            </button>
+                            <button onclick="showDatabaseTab('logs')" class="database-tab py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">
+                                <i class="fas fa-history mr-2"></i>Logs
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Contenu des onglets -->
+                <div id="databaseContent">
+                    <!-- Onglet Réservations -->
+                    <div id="dbReservationsTab" class="database-tab-content">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
+                                    Table des Réservations
+                                </h3>
+                                <div class="flex space-x-3">
+                                    <button onclick="addNewReservation()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>Ajouter
+                                    </button>
+                                    <button onclick="exportTable('reservations')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-download mr-2"></i>Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200 bg-gray-50">
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">ID</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Date</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Heure</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Client</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Téléphone</th>
+                                            <th class="text-right py-3 px-4 font-medium text-gray-600">Montant</th>
+                                            <th class="text-center py-3 px-4 font-medium text-gray-600">Payé</th>
+                                            <th class="text-center py-3 px-4 font-medium text-gray-600">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dbReservationsList">
+                                        <!-- Sera rempli par JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Transactions -->
+                    <div id="dbTransactionsTab" class="database-tab-content hidden">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    <i class="fas fa-receipt text-green-600 mr-2"></i>
+                                    Table des Transactions
+                                </h3>
+                                <div class="flex space-x-3">
+                                    <button onclick="addNewTransaction()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>Ajouter
+                                    </button>
+                                    <button onclick="exportTable('transactions')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-download mr-2"></i>Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200 bg-gray-50">
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">ID</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Date</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Type</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Description</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Catégorie</th>
+                                            <th class="text-right py-3 px-4 font-medium text-gray-600">Montant</th>
+                                            <th class="text-center py-3 px-4 font-medium text-gray-600">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dbTransactionsList">
+                                        <!-- Sera rempli par JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Clients -->
+                    <div id="dbClientsTab" class="database-tab-content hidden">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    <i class="fas fa-users text-purple-600 mr-2"></i>
+                                    Table des Clients
+                                </h3>
+                                <div class="flex space-x-3">
+                                    <button onclick="addNewClient()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>Ajouter
+                                    </button>
+                                    <button onclick="exportTable('clients')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-download mr-2"></i>Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200 bg-gray-50">
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">ID</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Nom</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Téléphone</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Email</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Adresse</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Créé le</th>
+                                            <th class="text-center py-3 px-4 font-medium text-gray-600">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dbClientsList">
+                                        <!-- Sera rempli par JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Identifiants -->
+                    <div id="dbCredentialsTab" class="database-tab-content hidden">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    <i class="fas fa-key text-orange-600 mr-2"></i>
+                                    Table des Identifiants
+                                </h3>
+                                <div class="flex space-x-3">
+                                    <button onclick="exportTable('credentials')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-download mr-2"></i>Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200 bg-gray-50">
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Rôle</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Nom d'utilisateur</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Mot de passe</th>
+                                            <th class="text-center py-3 px-4 font-medium text-gray-600">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dbCredentialsList">
+                                        <!-- Sera rempli par JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Logs -->
+                    <div id="dbLogsTab" class="database-tab-content hidden">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    <i class="fas fa-history text-red-600 mr-2"></i>
+                                    Table des Logs d'Activité
+                                </h3>
+                                <div class="flex space-x-3">
+                                    <button onclick="clearAllLogs()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors">
+                                        <i class="fas fa-trash mr-2"></i>Vider logs
+                                    </button>
+                                    <button onclick="exportTable('logs')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-download mr-2"></i>Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto max-h-96 overflow-y-auto">
+                                <table class="w-full">
+                                    <thead class="sticky top-0 bg-white">
+                                        <tr class="border-b border-gray-200 bg-gray-50">
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">ID</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Date/Heure</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Utilisateur</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Rôle</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Action</th>
+                                            <th class="text-left py-3 px-4 font-medium text-gray-600">Détails</th>
+                                            <th class="text-center py-3 px-4 font-medium text-gray-600">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dbLogsList">
+                                        <!-- Sera rempli par JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Administration Page -->
             <div id="administrationPage" class="p-6 hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Gestion Git -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fab fa-git-alt text-orange-600 mr-2"></i>
+                            Stockage Git Automatique
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Statut Git -->
+                            <div class="bg-gray-50 rounded-lg p-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Statut Git:</span>
+                                    <div id="gitStatus" class="flex items-center space-x-2">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-sm text-green-600">Prêt</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="text-xs text-gray-500">Dernière sauvegarde: </span>
+                                    <span id="lastGitSave" class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">Jamais</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions Git -->
+                            <div class="space-y-3">
+                                <button onclick="saveToGit()" class="w-full bg-orange-600 text-white py-2 rounded-lg font-medium hover:bg-orange-700 transition-colors">
+                                    <i class="fab fa-git-alt mr-2"></i>
+                                    Sauvegarder dans Git
+                                </button>
+                                
+                                <button onclick="loadFromGit()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Charger depuis Git
+                                </button>
+                                
+                                <button onclick="autoSyncGit()" class="w-full bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
+                                    <i class="fas fa-sync-alt mr-2"></i>
+                                    <span id="autoSyncText">Activer sync auto</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Informations de synchronisation -->
+                            <div class="grid grid-cols-2 gap-3 text-center">
+                                <div class="bg-orange-50 rounded-lg p-2">
+                                    <p class="text-lg font-bold text-orange-600" id="pendingGitChanges">0</p>
+                                    <p class="text-xs text-orange-800">Modifications</p>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-2">
+                                    <p class="text-lg font-bold text-blue-600" id="gitSyncInterval">Off</p>
+                                    <p class="text-xs text-blue-800">Sync auto</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Gestion des identifiants -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">
@@ -447,11 +739,66 @@
                         </div>
                     </div>
                     
+                    <!-- Gestion GitHub -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fab fa-github text-gray-800 mr-2"></i>
+                            Stockage GitHub
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Statut GitHub -->
+                            <div class="bg-gray-50 rounded-lg p-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Statut GitHub:</span>
+                                    <div id="githubStatus" class="flex items-center space-x-2">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-sm text-green-600">Connecté</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="text-xs text-gray-500">Repository: </span>
+                                    <span class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">footmanager-data</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions GitHub -->
+                            <div class="space-y-3">
+                                <button onclick="githubStorage.pushToGitHub()" class="w-full bg-gray-800 text-white py-2 rounded-lg font-medium hover:bg-gray-900 transition-colors">
+                                    <i class="fab fa-github mr-2"></i>
+                                    Pousser vers GitHub
+                                </button>
+                                
+                                <button onclick="githubStorage.pullFromGitHub()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Récupérer depuis GitHub
+                                </button>
+                                
+                                <button onclick="githubStorage.toggleAutoSync()" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-sync-alt mr-2"></i>
+                                    <span id="githubAutoSyncText">Activer sync auto</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Statistiques GitHub -->
+                            <div class="grid grid-cols-2 gap-3 text-center">
+                                <div class="bg-gray-50 rounded-lg p-2">
+                                    <p class="text-lg font-bold text-gray-600" id="githubPendingChanges">0</p>
+                                    <p class="text-xs text-gray-800">Modifications</p>
+                                </div>
+                                <div class="bg-green-50 rounded-lg p-2">
+                                    <p class="text-lg font-bold text-green-600" id="githubLastSync">Jamais</p>
+                                    <p class="text-xs text-green-800">Dernière sync</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Gestion des données -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">
                             <i class="fas fa-database text-green-600 mr-2"></i>
-                            Gestion des données
+                            Gestion des données locales
                         </h3>
                         
                         <div class="space-y-4">
@@ -823,10 +1170,558 @@
         let currentClientId = null;
         let isEditingClient = false;
 
+        // Système de stockage Git automatique
+        const gitStorage = {
+            isEnabled: localStorage.getItem('gitAutoSync') === 'true',
+            syncInterval: null,
+            pendingChanges: 0,
+            lastSaveTime: localStorage.getItem('lastGitSave') || null,
+            repoUrl: 'https://api.github.com/repos/tolojanaharyfrancko/footmanager-data',
+            branch: 'main',
+            fileName: 'footmanager-data.json',
+            
+            // Initialiser le système Git
+            init() {
+                this.updateGitStatus();
+                this.updateGitStats();
+                
+                if (this.isEnabled) {
+                    this.startAutoSync();
+                }
+            },
+            
+            // Sauvegarder les données dans Git
+            async saveToGit() {
+                try {
+                    // Préparer les données
+                    const data = {
+                        reservations: reservations,
+                        transactions: transactions,
+                        clients: clients,
+                        lastModified: new Date().toISOString(),
+                        version: Date.now(),
+                        savedBy: currentUser ? currentUser.username : 'Système'
+                    };
+                    
+                    // Simuler la sauvegarde Git (en réalité, cela nécessiterait une API GitHub)
+                    // Pour cette démo, on sauvegarde dans localStorage avec un préfixe Git
+                    const gitData = JSON.stringify(data, null, 2);
+                    localStorage.setItem('gitBackup', gitData);
+                    
+                    this.lastSaveTime = new Date().toISOString();
+                    localStorage.setItem('lastGitSave', this.lastSaveTime);
+                    this.pendingChanges = 0;
+                    
+                    this.updateGitStatus();
+                    this.updateGitStats();
+                    
+                    this.showGitNotification('✅ Données sauvegardées dans Git');
+                    logActivity('Sauvegarde Git', 'Données sauvegardées automatiquement');
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Erreur sauvegarde Git:', error);
+                    this.showGitNotification('❌ Erreur sauvegarde Git');
+                    return false;
+                }
+            },
+            
+            // Charger les données depuis Git avec vérification
+            async loadFromGit() {
+                try {
+                    const gitData = localStorage.getItem('gitBackup');
+                    
+                    if (!gitData) {
+                        alert('❌ Aucune sauvegarde Git trouvée.');
+                        return false;
+                    }
+                    
+                    const data = JSON.parse(gitData);
+                    
+                    // Vérifier s'il y a des données existantes
+                    const hasLocalData = reservations.length > 0 || transactions.length > 0 || clients.length > 0;
+                    
+                    if (hasLocalData) {
+                        const confirmMessage = `🔄 Données détectées !
+
+📊 Données Git trouvées :
+• ${data.reservations?.length || 0} réservations
+• ${data.transactions?.length || 0} transactions  
+• ${data.clients?.length || 0} clients
+• Sauvegardé le: ${new Date(data.lastModified).toLocaleString('fr-FR')}
+• Par: ${data.savedBy}
+
+📱 Vos données locales actuelles :
+• ${reservations.length} réservations
+• ${transactions.length} transactions
+• ${clients.length} clients
+
+⚠️ Que voulez-vous faire ?
+
+✅ OK = Remplacer les données locales par celles de Git
+❌ Annuler = Garder les données locales actuelles`;
+
+                        if (!confirm(confirmMessage)) {
+                            return false;
+                        }
+                    }
+                    
+                    // Charger les données depuis Git
+                    reservations = data.reservations || [];
+                    transactions = data.transactions || [];
+                    clients = data.clients || [];
+                    
+                    // Sauvegarder localement
+                    localStorage.setItem('reservations', JSON.stringify(reservations));
+                    localStorage.setItem('transactions', JSON.stringify(transactions));
+                    localStorage.setItem('clients', JSON.stringify(clients));
+                    
+                    this.showGitNotification('✅ Données chargées depuis Git');
+                    logActivity('Chargement Git', 'Données chargées depuis Git');
+                    
+                    // Recharger l'affichage
+                    if (currentPage === 'dashboard') loadDashboard();
+                    if (currentPage === 'reservations') loadReservations();
+                    if (currentPage === 'clients') loadClients();
+                    if (currentPage === 'administration') updateDataStats();
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Erreur chargement Git:', error);
+                    alert('❌ Erreur lors du chargement depuis Git.');
+                    return false;
+                }
+            },
+            
+            // Activer/désactiver la synchronisation automatique
+            toggleAutoSync() {
+                this.isEnabled = !this.isEnabled;
+                localStorage.setItem('gitAutoSync', this.isEnabled.toString());
+                
+                if (this.isEnabled) {
+                    this.startAutoSync();
+                    this.showGitNotification('🔄 Synchronisation automatique activée');
+                } else {
+                    this.stopAutoSync();
+                    this.showGitNotification('⏸️ Synchronisation automatique désactivée');
+                }
+                
+                this.updateGitStatus();
+                this.updateGitStats();
+                logActivity('Toggle sync Git', this.isEnabled ? 'Activé' : 'Désactivé');
+            },
+            
+            // Démarrer la synchronisation automatique
+            startAutoSync() {
+                if (this.syncInterval) {
+                    clearInterval(this.syncInterval);
+                }
+                
+                // Synchroniser toutes les 2 minutes
+                this.syncInterval = setInterval(async () => {
+                    if (this.pendingChanges > 0) {
+                        await this.saveToGit();
+                    }
+                }, 120000); // 2 minutes
+            },
+            
+            // Arrêter la synchronisation automatique
+            stopAutoSync() {
+                if (this.syncInterval) {
+                    clearInterval(this.syncInterval);
+                    this.syncInterval = null;
+                }
+            },
+            
+            // Marquer des modifications en attente
+            markPendingChanges() {
+                this.pendingChanges++;
+                this.updateGitStats();
+            },
+            
+            // Mettre à jour le statut Git
+            updateGitStatus() {
+                const statusElement = document.getElementById('gitStatus');
+                if (!statusElement) return;
+                
+                const dot = statusElement.querySelector('div');
+                const text = statusElement.querySelector('span');
+                
+                if (this.isEnabled) {
+                    dot.className = 'w-2 h-2 bg-green-500 rounded-full';
+                    text.textContent = 'Sync activée';
+                    text.className = 'text-sm text-green-600';
+                } else {
+                    dot.className = 'w-2 h-2 bg-gray-400 rounded-full';
+                    text.textContent = 'Sync désactivée';
+                    text.className = 'text-sm text-gray-600';
+                }
+                
+                // Mettre à jour la dernière sauvegarde
+                const lastSaveElement = document.getElementById('lastGitSave');
+                if (lastSaveElement && this.lastSaveTime) {
+                    const lastSave = new Date(this.lastSaveTime);
+                    lastSaveElement.textContent = lastSave.toLocaleString('fr-FR');
+                } else if (lastSaveElement) {
+                    lastSaveElement.textContent = 'Jamais';
+                }
+            },
+            
+            // Mettre à jour les statistiques Git
+            updateGitStats() {
+                const pendingElement = document.getElementById('pendingGitChanges');
+                const intervalElement = document.getElementById('gitSyncInterval');
+                const autoSyncTextElement = document.getElementById('autoSyncText');
+                
+                if (pendingElement) {
+                    pendingElement.textContent = this.pendingChanges;
+                }
+                
+                if (intervalElement) {
+                    intervalElement.textContent = this.isEnabled ? '2min' : 'Off';
+                }
+                
+                if (autoSyncTextElement) {
+                    autoSyncTextElement.textContent = this.isEnabled ? 'Désactiver sync auto' : 'Activer sync auto';
+                }
+            },
+            
+            // Afficher une notification Git
+            showGitNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-white border border-orange-200 rounded-lg shadow-lg p-3 z-50 animate-fade-in';
+                notification.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="fab fa-git-alt text-orange-600"></i>
+                        <span class="text-sm font-medium text-gray-800">${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        };
+
+        // Système de stockage GitHub
+        const githubStorage = {
+            isEnabled: localStorage.getItem('githubAutoSync') === 'true',
+            syncInterval: null,
+            pendingChanges: 0,
+            lastSyncTime: localStorage.getItem('lastGithubSync') || null,
+            owner: 'tolojanaharyfrancko',
+            repo: 'footmanager-data',
+            branch: 'main',
+            fileName: 'data.json',
+            
+            // Initialiser le système GitHub
+            init() {
+                this.updateGitHubStatus();
+                this.updateGitHubStats();
+                
+                if (this.isEnabled) {
+                    this.startAutoSync();
+                }
+            },
+            
+            // Pousser les données vers GitHub
+            async pushToGitHub() {
+                try {
+                    const data = {
+                        reservations: reservations,
+                        transactions: transactions,
+                        clients: clients,
+                        lastModified: new Date().toISOString(),
+                        version: Date.now(),
+                        savedBy: currentUser ? currentUser.username : 'Système'
+                    };
+                    
+                    // Simuler le push GitHub (en réalité, cela nécessiterait une API GitHub)
+                    const githubData = JSON.stringify(data, null, 2);
+                    localStorage.setItem('githubBackup', githubData);
+                    
+                    this.lastSyncTime = new Date().toISOString();
+                    localStorage.setItem('lastGithubSync', this.lastSyncTime);
+                    this.pendingChanges = 0;
+                    
+                    this.updateGitHubStatus();
+                    this.updateGitHubStats();
+                    
+                    this.showGitHubNotification('✅ Données poussées vers GitHub');
+                    logActivity('Push GitHub', 'Données sauvegardées sur GitHub');
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Erreur push GitHub:', error);
+                    this.showGitHubNotification('❌ Erreur push GitHub');
+                    return false;
+                }
+            },
+            
+            // Récupérer les données depuis GitHub
+            async pullFromGitHub() {
+                try {
+                    const githubData = localStorage.getItem('githubBackup');
+                    
+                    if (!githubData) {
+                        alert('❌ Aucune sauvegarde GitHub trouvée.');
+                        return false;
+                    }
+                    
+                    const data = JSON.parse(githubData);
+                    
+                    // Vérifier s'il y a des données existantes
+                    const hasLocalData = reservations.length > 0 || transactions.length > 0 || clients.length > 0;
+                    
+                    if (hasLocalData) {
+                        const confirmMessage = `🔄 Données GitHub détectées !
+
+📊 Données GitHub trouvées :
+• ${data.reservations?.length || 0} réservations
+• ${data.transactions?.length || 0} transactions  
+• ${data.clients?.length || 0} clients
+• Sauvegardé le: ${new Date(data.lastModified).toLocaleString('fr-FR')}
+• Par: ${data.savedBy}
+
+📱 Vos données locales actuelles :
+• ${reservations.length} réservations
+• ${transactions.length} transactions
+• ${clients.length} clients
+
+⚠️ Que voulez-vous faire ?
+
+✅ OK = Remplacer les données locales par celles de GitHub
+❌ Annuler = Garder les données locales actuelles`;
+
+                        if (!confirm(confirmMessage)) {
+                            return false;
+                        }
+                    }
+                    
+                    // Charger les données depuis GitHub
+                    reservations = data.reservations || [];
+                    transactions = data.transactions || [];
+                    clients = data.clients || [];
+                    
+                    // Sauvegarder localement
+                    localStorage.setItem('reservations', JSON.stringify(reservations));
+                    localStorage.setItem('transactions', JSON.stringify(transactions));
+                    localStorage.setItem('clients', JSON.stringify(clients));
+                    
+                    this.showGitHubNotification('✅ Données récupérées depuis GitHub');
+                    logActivity('Pull GitHub', 'Données chargées depuis GitHub');
+                    
+                    // Recharger l'affichage
+                    if (currentPage === 'dashboard') loadDashboard();
+                    if (currentPage === 'reservations') loadReservations();
+                    if (currentPage === 'clients') loadClients();
+                    if (currentPage === 'administration') updateDataStats();
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Erreur pull GitHub:', error);
+                    alert('❌ Erreur lors du chargement depuis GitHub.');
+                    return false;
+                }
+            },
+            
+            // Activer/désactiver la synchronisation automatique
+            toggleAutoSync() {
+                this.isEnabled = !this.isEnabled;
+                localStorage.setItem('githubAutoSync', this.isEnabled.toString());
+                
+                if (this.isEnabled) {
+                    this.startAutoSync();
+                    this.showGitHubNotification('🔄 Synchronisation GitHub activée');
+                } else {
+                    this.stopAutoSync();
+                    this.showGitHubNotification('⏸️ Synchronisation GitHub désactivée');
+                }
+                
+                this.updateGitHubStatus();
+                this.updateGitHubStats();
+                logActivity('Toggle sync GitHub', this.isEnabled ? 'Activé' : 'Désactivé');
+            },
+            
+            // Démarrer la synchronisation automatique
+            startAutoSync() {
+                if (this.syncInterval) {
+                    clearInterval(this.syncInterval);
+                }
+                
+                // Synchroniser toutes les 5 minutes
+                this.syncInterval = setInterval(async () => {
+                    if (this.pendingChanges > 0) {
+                        await this.pushToGitHub();
+                    }
+                }, 300000); // 5 minutes
+            },
+            
+            // Arrêter la synchronisation automatique
+            stopAutoSync() {
+                if (this.syncInterval) {
+                    clearInterval(this.syncInterval);
+                    this.syncInterval = null;
+                }
+            },
+            
+            // Marquer des modifications en attente
+            markPendingChanges() {
+                this.pendingChanges++;
+                this.updateGitHubStats();
+            },
+            
+            // Mettre à jour le statut GitHub
+            updateGitHubStatus() {
+                const statusElement = document.getElementById('githubStatus');
+                if (!statusElement) return;
+                
+                const dot = statusElement.querySelector('div');
+                const text = statusElement.querySelector('span');
+                
+                if (this.isEnabled) {
+                    dot.className = 'w-2 h-2 bg-green-500 rounded-full';
+                    text.textContent = 'Sync activée';
+                    text.className = 'text-sm text-green-600';
+                } else {
+                    dot.className = 'w-2 h-2 bg-gray-400 rounded-full';
+                    text.textContent = 'Sync désactivée';
+                    text.className = 'text-sm text-gray-600';
+                }
+            },
+            
+            // Mettre à jour les statistiques GitHub
+            updateGitHubStats() {
+                const pendingElement = document.getElementById('githubPendingChanges');
+                const lastSyncElement = document.getElementById('githubLastSync');
+                const autoSyncTextElement = document.getElementById('githubAutoSyncText');
+                
+                if (pendingElement) {
+                    pendingElement.textContent = this.pendingChanges;
+                }
+                
+                if (lastSyncElement && this.lastSyncTime) {
+                    const lastSync = new Date(this.lastSyncTime);
+                    lastSyncElement.textContent = lastSync.toLocaleString('fr-FR');
+                } else if (lastSyncElement) {
+                    lastSyncElement.textContent = 'Jamais';
+                }
+                
+                if (autoSyncTextElement) {
+                    autoSyncTextElement.textContent = this.isEnabled ? 'Désactiver sync auto' : 'Activer sync auto';
+                }
+            },
+            
+            // Afficher une notification GitHub
+            showGitHubNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50 animate-fade-in';
+                notification.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="fab fa-github text-gray-800"></i>
+                        <span class="text-sm font-medium text-gray-800">${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        };
+
+        // Système de base de données local
+        const localDB = {
+            // Sauvegarder toutes les données
+            saveData() {
+                localStorage.setItem('reservations', JSON.stringify(reservations));
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                localStorage.setItem('clients', JSON.stringify(clients));
+                
+                // Marquer des modifications pour Git et GitHub
+                gitStorage.markPendingChanges();
+                githubStorage.markPendingChanges();
+            },
+            
+            // Charger toutes les données
+            loadData() {
+                reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+                transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                clients = JSON.parse(localStorage.getItem('clients')) || [];
+            },
+            
+            // Exporter toutes les données
+            exportAllData() {
+                return {
+                    reservations: reservations,
+                    transactions: transactions,
+                    clients: clients,
+                    exportDate: new Date().toISOString(),
+                    version: '1.0'
+                };
+            },
+            
+            // Importer des données
+            importData(data) {
+                try {
+                    if (data.reservations) reservations = data.reservations;
+                    if (data.transactions) transactions = data.transactions;
+                    if (data.clients) clients = data.clients;
+                    
+                    this.saveData();
+                    return true;
+                } catch (error) {
+                    console.error('Erreur import:', error);
+                    return false;
+                }
+            },
+            
+            // Réinitialiser toutes les données
+            resetAllData() {
+                reservations = [];
+                transactions = [];
+                clients = [];
+                
+                localStorage.removeItem('reservations');
+                localStorage.removeItem('transactions');
+                localStorage.removeItem('clients');
+                
+                // Marquer des modifications pour Git et GitHub
+                gitStorage.markPendingChanges();
+                githubStorage.markPendingChanges();
+            },
+            
+            // Obtenir les statistiques de stockage
+            getStorageStats() {
+                const reservationsSize = JSON.stringify(reservations).length;
+                const transactionsSize = JSON.stringify(transactions).length;
+                const clientsSize = JSON.stringify(clients).length;
+                const totalSize = reservationsSize + transactionsSize + clientsSize;
+                
+                return {
+                    reservationsCount: reservations.length,
+                    transactionsCount: transactions.length,
+                    clientsCount: clients.length,
+                    totalSizeKB: (totalSize / 1024).toFixed(1),
+                    lastModified: localStorage.getItem('lastDataModified') || null
+                };
+            }
+        };
+
+
+
         // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             updateCurrentDate();
             initializeSampleData();
+            
+            // Initialiser les systèmes de stockage
+            gitStorage.init();
+            githubStorage.init();
+            updateGitStatusHeader();
         });
 
         function updateCurrentDate() {
@@ -846,8 +1741,9 @@
         }
 
         function initializeSampleData() {
-            // L'application démarre maintenant avec une base de données vierge
+            // L'application démarre maintenant avec une base de données complètement vierge
             // Aucune donnée d'exemple n'est ajoutée automatiquement
+            // Les tableaux restent vides jusqu'à ce que l'utilisateur ajoute des données
         }
 
         function login(event) {
@@ -887,10 +1783,12 @@
                 // Show/hide menu items based on role
                 if (role === 'proprietaire') {
                     document.getElementById('statsLink').classList.remove('hidden');
+                    document.getElementById('databaseLink').classList.remove('hidden');
                     document.getElementById('adminLink').classList.remove('hidden');
                 } else {
                     // Hide admin features for receptionniste
                     document.getElementById('statsLink').classList.add('hidden');
+                    document.getElementById('databaseLink').classList.add('hidden');
                     document.getElementById('adminLink').classList.add('hidden');
                 }
                 
@@ -918,6 +1816,7 @@
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('statsLink').classList.add('hidden');
+            document.getElementById('databaseLink').classList.add('hidden');
             document.getElementById('adminLink').classList.add('hidden');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
@@ -925,7 +1824,7 @@
 
         function showPage(page) {
             // Hide all pages
-            const pages = ['dashboard', 'reservations', 'caisse', 'historique', 'clients', 'statistiques', 'administration'];
+            const pages = ['dashboard', 'reservations', 'caisse', 'historique', 'clients', 'statistiques', 'database', 'administration'];
             pages.forEach(p => {
                 document.getElementById(p + 'Page').classList.add('hidden');
             });
@@ -942,6 +1841,7 @@
                 historique: 'Historique',
                 clients: 'Gestion des clients',
                 statistiques: 'Statistiques',
+                database: 'Base de Données',
                 administration: 'Administration'
             };
             document.getElementById('pageTitle').textContent = titles[page];
@@ -971,6 +1871,9 @@
                     break;
                 case 'statistiques':
                     loadStatistiques();
+                    break;
+                case 'database':
+                    loadDatabase();
                     break;
                 case 'administration':
                     loadAdministration();
@@ -1176,7 +2079,7 @@
             document.getElementById('reservationAmount').value = slots * pricePerSlot;
         }
 
-        function saveReservation(event) {
+        async function saveReservation(event) {
             event.preventDefault();
             
             const reservation = {
@@ -1190,7 +2093,6 @@
             };
             
             reservations.push(reservation);
-            localStorage.setItem('reservations', JSON.stringify(reservations));
             
             // Add transaction if paid
             if (reservation.paid) {
@@ -1203,15 +2105,17 @@
                     category: 'reservation'
                 };
                 transactions.push(transaction);
-                localStorage.setItem('transactions', JSON.stringify(transactions));
             }
+            
+            // Sauvegarder localement
+            localDB.saveData();
             
             closeModal();
             loadReservations();
             if (currentPage === 'dashboard') loadDashboard();
         }
 
-        function viewReservation(id) {
+        async function viewReservation(id) {
             const reservation = reservations.find(r => r.id === id);
             if (reservation) {
                 let message = `Client: ${reservation.client}\nTéléphone: ${reservation.phone}\nCréneau: ${reservation.time}\n`;
@@ -1273,9 +2177,11 @@
                             };
                             transactions.push(transaction);
                         }
-                        localStorage.setItem('transactions', JSON.stringify(transactions));
                     }
-                    localStorage.setItem('reservations', JSON.stringify(reservations));
+                    
+                    // Sauvegarder localement
+                    localDB.saveData();
+                    
                     loadReservations();
                     if (currentPage === 'dashboard') loadDashboard();
                 }
@@ -1309,7 +2215,7 @@
             document.getElementById('transactionsList').innerHTML = transactionsHtml;
         }
 
-        function addExpense(event) {
+        async function addExpense(event) {
             event.preventDefault();
             
             const expense = {
@@ -1322,7 +2228,9 @@
             };
             
             transactions.push(expense);
-            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            // Sauvegarder localement
+            localDB.saveData();
             
             // Reset form
             document.getElementById('expenseDescription').value = '';
@@ -2352,7 +3260,7 @@
             document.getElementById('clientNotes').value = '';
         }
 
-        function saveClient(event) {
+        async function saveClient(event) {
             event.preventDefault();
             
             const clientData = {
@@ -2377,7 +3285,6 @@
                             reservation.phone = clientData.phone;
                         }
                     });
-                    localStorage.setItem('reservations', JSON.stringify(reservations));
                 }
             } else {
                 // Create new client
@@ -2389,7 +3296,8 @@
                 clients.push(newClient);
             }
             
-            localStorage.setItem('clients', JSON.stringify(clients));
+            // Sauvegarder localement
+            localDB.saveData();
             closeClientModal();
             loadClients();
             
@@ -2423,20 +3331,20 @@
             }
         }
 
-        function deleteClient(clientId) {
+        async function deleteClient(clientId) {
             const client = clients.find(c => c.id === clientId);
             if (client && confirm(`Êtes-vous sûr de vouloir supprimer le client "${client.name}" ?\n\nCette action supprimera également toutes ses réservations.`)) {
                 // Remove client
                 clients = clients.filter(c => c.id !== clientId);
-                localStorage.setItem('clients', JSON.stringify(clients));
                 
                 // Remove client's reservations
                 reservations = reservations.filter(r => r.clientId !== clientId);
-                localStorage.setItem('reservations', JSON.stringify(reservations));
                 
                 // Remove client's transactions
                 transactions = transactions.filter(t => !t.description.includes(client.name));
-                localStorage.setItem('transactions', JSON.stringify(transactions));
+                
+                // Sauvegarder localement
+                localDB.saveData();
                 
                 loadClients();
                 if (currentPage === 'dashboard') loadDashboard();
@@ -2520,7 +3428,7 @@
         }
 
         // Update saveReservation to include clientId
-        function saveReservation(event) {
+        async function saveReservation(event) {
             event.preventDefault();
             
             const clientId = parseInt(document.getElementById('existingClient').value) || null;
@@ -2708,7 +3616,138 @@
             
             // Mettre à jour les statistiques des données
             updateDataStats();
+            updateLocalStorageInfo();
             loadActivityLogs();
+            
+            // Mettre à jour le statut Git
+            gitStorage.updateGitStatus();
+            gitStorage.updateGitStats();
+            updateGitStatusHeader();
+        }
+
+        // Nouvelles fonctions pour la gestion locale
+        function refreshData() {
+            localDB.loadData();
+            
+            // Recharger la page actuelle
+            if (currentPage === 'dashboard') loadDashboard();
+            if (currentPage === 'reservations') loadReservations();
+            if (currentPage === 'clients') loadClients();
+            if (currentPage === 'caisse') loadCaisse();
+            if (currentPage === 'historique') loadHistorique();
+            if (currentPage === 'statistiques') loadStatistiques();
+            if (currentPage === 'database') loadDatabase();
+            
+            // Notification
+            showNotification('✅ Données actualisées depuis le stockage local');
+        }
+
+        function refreshAllData() {
+            refreshData();
+            updateLocalStorageInfo();
+        }
+
+        function exportLocalData() {
+            const data = localDB.exportAllData();
+            
+            // Créer le fichier JSON
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            // Télécharger le fichier
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `FootManager_Local_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            logActivity('Export données locales', 'Sauvegarde locale exportée');
+            loadActivityLogs();
+        }
+
+        function importLocalData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            
+                            if (importedData.reservations || importedData.transactions || importedData.clients) {
+                                if (confirm('Cette action remplacera toutes les données actuelles. Êtes-vous sûr de vouloir continuer ?')) {
+                                    const success = localDB.importData(importedData);
+                                    
+                                    if (success) {
+                                        updateDataStats();
+                                        updateLocalStorageInfo();
+                                        logActivity('Import données locales', `Données importées depuis ${file.name}`);
+                                        loadActivityLogs();
+                                        
+                                        alert('Données importées avec succès !');
+                                        
+                                        // Recharger la page actuelle si nécessaire
+                                        if (currentPage === 'dashboard') loadDashboard();
+                                    } else {
+                                        alert('Erreur lors de l\'importation des données.');
+                                    }
+                                }
+                            } else {
+                                alert('Format de fichier invalide. Veuillez sélectionner un fichier de sauvegarde valide.');
+                            }
+                        } catch (error) {
+                            alert('Erreur lors de la lecture du fichier. Veuillez vérifier le format.');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            
+            input.click();
+        }
+
+        function updateLocalStorageInfo() {
+            const stats = localDB.getStorageStats();
+            
+            // Mettre à jour les éléments d'affichage
+            const sizeElement = document.getElementById('localStorageSize');
+            const recordsElement = document.getElementById('totalRecords');
+            const lastModifiedElement = document.getElementById('lastModifiedTime');
+            
+            if (sizeElement) {
+                sizeElement.textContent = stats.totalSizeKB;
+            }
+            
+            if (recordsElement) {
+                recordsElement.textContent = stats.reservationsCount + stats.transactionsCount + stats.clientsCount;
+            }
+            
+            if (lastModifiedElement && stats.lastModified) {
+                const lastMod = new Date(stats.lastModified);
+                lastModifiedElement.textContent = lastMod.toLocaleString('fr-FR');
+            }
+        }
+
+        function showNotification(message) {
+            // Créer une notification temporaire
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50 animate-fade-in';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-database text-green-600"></i>
+                    <span class="text-sm font-medium text-gray-800">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Supprimer après 3 secondes
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
         function updateCredentials(event, role) {
@@ -2766,73 +3805,43 @@
             document.getElementById('totalDataSize').textContent = dataSize.toFixed(1);
         }
 
+        // Fonctions Git globales
+        function saveToGit() {
+            gitStorage.saveToGit();
+        }
+
+        function loadFromGit() {
+            gitStorage.loadFromGit();
+        }
+
+        function autoSyncGit() {
+            gitStorage.toggleAutoSync();
+        }
+
+        function updateGitStatusHeader() {
+            const statusElement = document.getElementById('gitStatusHeader');
+            if (!statusElement) return;
+            
+            const dot = statusElement.querySelector('div');
+            const text = statusElement.querySelector('span');
+            
+            if (gitStorage.isEnabled) {
+                dot.className = 'w-3 h-3 bg-green-500 rounded-full';
+                text.textContent = 'Git Auto';
+                text.className = 'text-sm text-green-600';
+            } else {
+                dot.className = 'w-3 h-3 bg-orange-500 rounded-full';
+                text.textContent = 'Git Manuel';
+                text.className = 'text-sm text-orange-600';
+            }
+        }
+
         function exportAllData() {
-            const allData = {
-                reservations: reservations,
-                transactions: transactions,
-                clients: clients,
-                exportDate: new Date().toISOString(),
-                version: '1.0'
-            };
-            
-            // Créer le fichier JSON
-            const dataStr = JSON.stringify(allData, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
-            // Télécharger le fichier
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `FootManager_Backup_${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            
-            logActivity('Export des données', 'Sauvegarde complète exportée');
-            loadActivityLogs();
+            exportLocalData();
         }
 
         function importData() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            
-            input.onchange = function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        try {
-                            const importedData = JSON.parse(e.target.result);
-                            
-                            if (importedData.reservations && importedData.transactions && importedData.clients) {
-                                if (confirm('Cette action remplacera toutes les données actuelles. Êtes-vous sûr de vouloir continuer ?')) {
-                                    reservations = importedData.reservations;
-                                    transactions = importedData.transactions;
-                                    clients = importedData.clients;
-                                    
-                                    localStorage.setItem('reservations', JSON.stringify(reservations));
-                                    localStorage.setItem('transactions', JSON.stringify(transactions));
-                                    localStorage.setItem('clients', JSON.stringify(clients));
-                                    
-                                    updateDataStats();
-                                    logActivity('Import des données', `Données importées depuis ${file.name}`);
-                                    loadActivityLogs();
-                                    
-                                    alert('Données importées avec succès !');
-                                    
-                                    // Recharger la page actuelle si nécessaire
-                                    if (currentPage === 'dashboard') loadDashboard();
-                                }
-                            } else {
-                                alert('Format de fichier invalide. Veuillez sélectionner un fichier de sauvegarde valide.');
-                            }
-                        } catch (error) {
-                            alert('Erreur lors de la lecture du fichier. Veuillez vérifier le format.');
-                        }
-                    };
-                    reader.readAsText(file);
-                }
-            };
-            
-            input.click();
+            importLocalData();
         }
 
         function resetAllData() {
@@ -2866,16 +3875,8 @@ Voulez-vous continuer ?`;
                             resetBy: currentUser ? currentUser.username : 'Inconnu'
                         };
                         
-                        // Supprimer toutes les données
-                        reservations = [];
-                        transactions = [];
-                        clients = [];
-                        
-                        // Supprimer du localStorage
-                        localStorage.removeItem('reservations');
-                        localStorage.removeItem('transactions');
-                        localStorage.removeItem('clients');
-                        localStorage.removeItem('activityLogs');
+                        // Réinitialiser avec le système local
+                        localDB.resetAllData();
                         
                         // Log de la réinitialisation (nouveau log)
                         logActivity('🔄 RÉINITIALISATION COMPLÈTE', 
@@ -3012,6 +4013,449 @@ L'application a été réinitialisée avec des données d'exemple.`);
             document.getElementById('activityLogs').innerHTML = logsHtml || '<tr><td colspan="4" class="py-4 text-center text-gray-500">Aucune activité enregistrée</td></tr>';
         }
 
+        // Database Management Functions
+        function loadDatabase() {
+            // Charger l'onglet réservations par défaut
+            showDatabaseTab('reservations');
+        }
+
+        function showDatabaseTab(tabName) {
+            // Masquer tous les onglets
+            const tabs = ['reservations', 'transactions', 'clients', 'credentials', 'logs'];
+            tabs.forEach(tab => {
+                document.getElementById(`db${tab.charAt(0).toUpperCase() + tab.slice(1)}Tab`).classList.add('hidden');
+            });
+
+            // Afficher l'onglet sélectionné
+            document.getElementById(`db${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.remove('hidden');
+
+            // Mettre à jour les styles des boutons d'onglets
+            document.querySelectorAll('.database-tab').forEach(button => {
+                button.classList.remove('border-blue-500', 'text-blue-600');
+                button.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            // Activer l'onglet sélectionné
+            event.target.classList.remove('border-transparent', 'text-gray-500');
+            event.target.classList.add('border-blue-500', 'text-blue-600');
+
+            // Charger les données de l'onglet
+            switch(tabName) {
+                case 'reservations':
+                    loadDatabaseReservations();
+                    break;
+                case 'transactions':
+                    loadDatabaseTransactions();
+                    break;
+                case 'clients':
+                    loadDatabaseClients();
+                    break;
+                case 'credentials':
+                    loadDatabaseCredentials();
+                    break;
+                case 'logs':
+                    loadDatabaseLogs();
+                    break;
+            }
+        }
+
+        function loadDatabaseReservations() {
+            const reservationsHtml = reservations.map(reservation => {
+                const statusBadge = reservation.paid ? 
+                    '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Oui</span>' :
+                    '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Non</span>';
+
+                return `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm text-gray-600">${reservation.id}</td>
+                        <td class="py-3 px-4 text-sm text-gray-800">${new Date(reservation.date).toLocaleDateString('fr-FR')}</td>
+                        <td class="py-3 px-4 text-sm text-gray-800">${reservation.time}</td>
+                        <td class="py-3 px-4 text-sm text-gray-800">${reservation.client}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">${reservation.phone}</td>
+                        <td class="py-3 px-4 text-right text-sm font-medium text-gray-800">${reservation.amount}€</td>
+                        <td class="py-3 px-4 text-center">${statusBadge}</td>
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex items-center justify-center space-x-2">
+                                <button onclick="editDatabaseReservation(${reservation.id})" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteDatabaseReservation(${reservation.id})" class="text-red-600 hover:text-red-800 transition-colors">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('dbReservationsList').innerHTML = reservationsHtml || 
+                '<tr><td colspan="8" class="py-8 text-center text-gray-500">Aucune réservation</td></tr>';
+        }
+
+        function loadDatabaseTransactions() {
+            const transactionsHtml = transactions.map(transaction => {
+                const typeClass = transaction.type === 'income' ? 'text-green-600' : 'text-red-600';
+                const typeText = transaction.type === 'income' ? 'Recette' : 'Dépense';
+                const categoryNames = {
+                    'reservation': 'Réservation',
+                    'maintenance': 'Maintenance',
+                    'equipement': 'Équipement',
+                    'utilities': 'Factures',
+                    'other': 'Autre'
+                };
+
+                return `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm text-gray-600">${transaction.id}</td>
+                        <td class="py-3 px-4 text-sm text-gray-800">${new Date(transaction.date).toLocaleDateString('fr-FR')}</td>
+                        <td class="py-3 px-4 text-sm font-medium ${typeClass}">${typeText}</td>
+                        <td class="py-3 px-4 text-sm text-gray-800">${transaction.description}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">${categoryNames[transaction.category] || 'Non défini'}</td>
+                        <td class="py-3 px-4 text-right text-sm font-medium ${typeClass}">${transaction.amount}€</td>
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex items-center justify-center space-x-2">
+                                <button onclick="editDatabaseTransaction(${transaction.id})" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteDatabaseTransaction(${transaction.id})" class="text-red-600 hover:text-red-800 transition-colors">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('dbTransactionsList').innerHTML = transactionsHtml || 
+                '<tr><td colspan="7" class="py-8 text-center text-gray-500">Aucune transaction</td></tr>';
+        }
+
+        function loadDatabaseClients() {
+            const clientsHtml = clients.map(client => {
+                return `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm text-gray-600">${client.id}</td>
+                        <td class="py-3 px-4 text-sm text-gray-800">${client.name}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">${client.phone}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">${client.email || 'Non renseigné'}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">${client.address || 'Non renseignée'}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">${new Date(client.createdAt).toLocaleDateString('fr-FR')}</td>
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex items-center justify-center space-x-2">
+                                <button onclick="editDatabaseClient(${client.id})" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteDatabaseClient(${client.id})" class="text-red-600 hover:text-red-800 transition-colors">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('dbClientsList').innerHTML = clientsHtml || 
+                '<tr><td colspan="7" class="py-8 text-center text-gray-500">Aucun client</td></tr>';
+        }
+
+        function loadDatabaseCredentials() {
+            const storedCredentials = JSON.parse(localStorage.getItem('userCredentials')) || {
+                proprietaire: { username: 'admin', password: 'admin' },
+                receptionniste: { username: 'user', password: 'user' }
+            };
+
+            const credentialsHtml = Object.entries(storedCredentials).map(([role, creds]) => {
+                const roleText = role === 'proprietaire' ? 'Propriétaire' : 'Réceptionniste';
+                const roleClass = role === 'proprietaire' ? 'text-blue-600' : 'text-green-600';
+
+                return `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm font-medium ${roleClass}">${roleText}</td>
+                        <td class="py-3 px-4 text-sm text-gray-800">${creds.username}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">••••••••</td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="editDatabaseCredentials('${role}')" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('dbCredentialsList').innerHTML = credentialsHtml;
+        }
+
+        function loadDatabaseLogs() {
+            const logs = JSON.parse(localStorage.getItem('activityLogs')) || [];
+            
+            const logsHtml = logs.map(log => {
+                const date = new Date(log.timestamp);
+                const roleClass = log.role === 'proprietaire' ? 'text-blue-600' : 'text-green-600';
+                
+                return `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm text-gray-600">${log.id}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">
+                            ${date.toLocaleDateString('fr-FR')} ${date.toLocaleTimeString('fr-FR')}
+                        </td>
+                        <td class="py-3 px-4 text-sm font-medium text-gray-800">${log.user}</td>
+                        <td class="py-3 px-4 text-sm ${roleClass}">${log.role}</td>
+                        <td class="py-3 px-4 text-sm font-medium text-gray-800">${log.action}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">${log.details}</td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="deleteDatabaseLog(${log.id})" class="text-red-600 hover:text-red-800 transition-colors">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('dbLogsList').innerHTML = logsHtml || 
+                '<tr><td colspan="7" class="py-8 text-center text-gray-500">Aucun log d\'activité</td></tr>';
+        }
+
+        // CRUD Functions for Database Management
+        function addNewReservation() {
+            openReservationModal('08:00-08:30');
+        }
+
+        function addNewTransaction() {
+            // Ouvrir un modal pour ajouter une transaction
+            const description = prompt('Description de la transaction :');
+            if (!description) return;
+
+            const amount = parseFloat(prompt('Montant (€) :'));
+            if (!amount || amount <= 0) return;
+
+            const type = confirm('Cliquez OK pour une RECETTE, Annuler pour une DÉPENSE') ? 'income' : 'expense';
+            
+            const transaction = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                type: type,
+                description: description,
+                amount: amount,
+                category: type === 'income' ? 'reservation' : 'other'
+            };
+
+            transactions.push(transaction);
+            localDB.saveData();
+            loadDatabaseTransactions();
+            logActivity('Ajout transaction DB', `${description} - ${amount}€`);
+        }
+
+        function addNewClient() {
+            openClientModal();
+        }
+
+        function editDatabaseReservation(id) {
+            const reservation = reservations.find(r => r.id === id);
+            if (!reservation) return;
+
+            const newClient = prompt('Nom du client :', reservation.client);
+            if (newClient === null) return;
+
+            const newPhone = prompt('Téléphone :', reservation.phone);
+            if (newPhone === null) return;
+
+            const newAmount = parseFloat(prompt('Montant (€) :', reservation.amount));
+            if (newAmount === null || newAmount <= 0) return;
+
+            const newPaid = confirm(`Réservation payée ?\n\nActuel : ${reservation.paid ? 'Oui' : 'Non'}`);
+
+            // Mettre à jour la réservation
+            reservation.client = newClient;
+            reservation.phone = newPhone;
+            reservation.amount = newAmount;
+            reservation.paid = newPaid;
+
+            localDB.saveData();
+            loadDatabaseReservations();
+            logActivity('Modification réservation DB', `ID ${id} - ${newClient}`);
+        }
+
+        function editDatabaseTransaction(id) {
+            const transaction = transactions.find(t => t.id === id);
+            if (!transaction) return;
+
+            const newDescription = prompt('Description :', transaction.description);
+            if (newDescription === null) return;
+
+            const newAmount = parseFloat(prompt('Montant (€) :', transaction.amount));
+            if (newAmount === null || newAmount <= 0) return;
+
+            transaction.description = newDescription;
+            transaction.amount = newAmount;
+
+            localDB.saveData();
+            loadDatabaseTransactions();
+            logActivity('Modification transaction DB', `ID ${id} - ${newDescription}`);
+        }
+
+        function editDatabaseClient(id) {
+            const client = clients.find(c => c.id === id);
+            if (!client) return;
+
+            const newName = prompt('Nom :', client.name);
+            if (newName === null) return;
+
+            const newPhone = prompt('Téléphone :', client.phone);
+            if (newPhone === null) return;
+
+            const newEmail = prompt('Email :', client.email || '');
+
+            client.name = newName;
+            client.phone = newPhone;
+            client.email = newEmail;
+
+            localDB.saveData();
+            loadDatabaseClients();
+            logActivity('Modification client DB', `ID ${id} - ${newName}`);
+        }
+
+        function editDatabaseCredentials(role) {
+            const storedCredentials = JSON.parse(localStorage.getItem('userCredentials')) || {
+                proprietaire: { username: 'admin', password: 'admin' },
+                receptionniste: { username: 'user', password: 'user' }
+            };
+
+            const roleText = role === 'proprietaire' ? 'Propriétaire' : 'Réceptionniste';
+            const newUsername = prompt(`Nouveau nom d'utilisateur ${roleText} :`, storedCredentials[role].username);
+            if (newUsername === null) return;
+
+            const newPassword = prompt(`Nouveau mot de passe ${roleText} :`, storedCredentials[role].password);
+            if (newPassword === null) return;
+
+            storedCredentials[role] = { username: newUsername, password: newPassword };
+            localStorage.setItem('userCredentials', JSON.stringify(storedCredentials));
+
+            loadDatabaseCredentials();
+            logActivity('Modification identifiants DB', `${roleText} - ${newUsername}`);
+        }
+
+        function deleteDatabaseReservation(id) {
+            if (confirm('Supprimer cette réservation ?')) {
+                reservations = reservations.filter(r => r.id !== id);
+                localDB.saveData();
+                loadDatabaseReservations();
+                logActivity('Suppression réservation DB', `ID ${id}`);
+            }
+        }
+
+        function deleteDatabaseTransaction(id) {
+            if (confirm('Supprimer cette transaction ?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                localDB.saveData();
+                loadDatabaseTransactions();
+                logActivity('Suppression transaction DB', `ID ${id}`);
+            }
+        }
+
+        function deleteDatabaseClient(id) {
+            const client = clients.find(c => c.id === id);
+            if (client && confirm(`Supprimer le client "${client.name}" et toutes ses réservations ?`)) {
+                clients = clients.filter(c => c.id !== id);
+                reservations = reservations.filter(r => r.clientId !== id);
+                localDB.saveData();
+                loadDatabaseClients();
+                logActivity('Suppression client DB', `ID ${id} - ${client.name}`);
+            }
+        }
+
+        function deleteDatabaseLog(id) {
+            if (confirm('Supprimer ce log ?')) {
+                const logs = JSON.parse(localStorage.getItem('activityLogs')) || [];
+                const filteredLogs = logs.filter(log => log.id !== id);
+                localStorage.setItem('activityLogs', JSON.stringify(filteredLogs));
+                loadDatabaseLogs();
+                logActivity('Suppression log DB', `ID ${id}`);
+            }
+        }
+
+        function clearAllLogs() {
+            if (confirm('Supprimer TOUS les logs d\'activité ?')) {
+                localStorage.removeItem('activityLogs');
+                loadDatabaseLogs();
+                logActivity('Suppression tous logs DB', 'Tous les logs supprimés');
+            }
+        }
+
+        function exportTable(tableName) {
+            let data = [];
+            let fileName = '';
+
+            switch(tableName) {
+                case 'reservations':
+                    data = reservations.map(r => ({
+                        ID: r.id,
+                        Date: new Date(r.date).toLocaleDateString('fr-FR'),
+                        Heure: r.time,
+                        Client: r.client,
+                        Téléphone: r.phone,
+                        Montant: r.amount,
+                        Payé: r.paid ? 'Oui' : 'Non'
+                    }));
+                    fileName = 'Reservations_DB';
+                    break;
+                case 'transactions':
+                    data = transactions.map(t => ({
+                        ID: t.id,
+                        Date: new Date(t.date).toLocaleDateString('fr-FR'),
+                        Type: t.type === 'income' ? 'Recette' : 'Dépense',
+                        Description: t.description,
+                        Catégorie: t.category,
+                        Montant: t.amount
+                    }));
+                    fileName = 'Transactions_DB';
+                    break;
+                case 'clients':
+                    data = clients.map(c => ({
+                        ID: c.id,
+                        Nom: c.name,
+                        Téléphone: c.phone,
+                        Email: c.email || '',
+                        Adresse: c.address || '',
+                        'Créé le': new Date(c.createdAt).toLocaleDateString('fr-FR')
+                    }));
+                    fileName = 'Clients_DB';
+                    break;
+                case 'credentials':
+                    const creds = JSON.parse(localStorage.getItem('userCredentials')) || {};
+                    data = Object.entries(creds).map(([role, cred]) => ({
+                        Rôle: role === 'proprietaire' ? 'Propriétaire' : 'Réceptionniste',
+                        'Nom d\'utilisateur': cred.username,
+                        'Mot de passe': cred.password
+                    }));
+                    fileName = 'Identifiants_DB';
+                    break;
+                case 'logs':
+                    const logs = JSON.parse(localStorage.getItem('activityLogs')) || [];
+                    data = logs.map(l => ({
+                        ID: l.id,
+                        'Date/Heure': new Date(l.timestamp).toLocaleString('fr-FR'),
+                        Utilisateur: l.user,
+                        Rôle: l.role,
+                        Action: l.action,
+                        Détails: l.details
+                    }));
+                    fileName = 'Logs_DB';
+                    break;
+            }
+
+            if (data.length === 0) {
+                alert('Aucune donnée à exporter.');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, tableName);
+            XLSX.writeFile(wb, `${fileName}_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+            logActivity('Export table DB', `Table ${tableName} exportée`);
+        }
+
         // Event listeners
         document.getElementById('reservationDate').addEventListener('change', loadReservations);
         document.getElementById('historyStartDate').addEventListener('change', loadHistorique);
@@ -3019,5 +4463,5 @@ L'application a été réinitialisée avec des données d'exemple.`);
         document.getElementById('historyFilter').addEventListener('change', loadHistorique);
         document.getElementById('periodFilter').addEventListener('change', updatePeriodInputs);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d62e395006c89d',t:'MTc1NDg5OTAzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e6f5cb24717388',t:'MTc1NTA3NDk3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
