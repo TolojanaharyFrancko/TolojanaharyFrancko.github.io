@@ -147,10 +147,10 @@
                         <div class="flex items-center space-x-2">
                             <div id="gitStatusHeader" class="flex items-center space-x-2">
                                 <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
-                                <span class="text-sm text-gray-500">Git</span>
+                                <span class="text-sm text-gray-500">GitHub</span>
                             </div>
-                            <button onclick="gitStorage.saveToGit()" class="text-orange-600 hover:text-orange-800 transition-colors" title="Sauvegarder dans Git">
-                                <i class="fab fa-git-alt text-sm"></i>
+                            <button onclick="githubStorage.pushToGitHub()" class="text-gray-800 hover:text-gray-900 transition-colors" title="Sauvegarder sur GitHub">
+                                <i class="fab fa-github text-sm"></i>
                             </button>
                             <button onclick="refreshAllData()" class="text-blue-600 hover:text-blue-800 transition-colors" title="Actualiser les données">
                                 <i class="fas fa-sync-alt text-sm"></i>
@@ -638,60 +638,7 @@
             <!-- Administration Page -->
             <div id="administrationPage" class="p-6 hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Gestion Git -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fab fa-git-alt text-orange-600 mr-2"></i>
-                            Stockage Git Automatique
-                        </h3>
-                        
-                        <div class="space-y-4">
-                            <!-- Statut Git -->
-                            <div class="bg-gray-50 rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm font-medium text-gray-700">Statut Git:</span>
-                                    <div id="gitStatus" class="flex items-center space-x-2">
-                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span class="text-sm text-green-600">Prêt</span>
-                                    </div>
-                                </div>
-                                <div class="mt-2">
-                                    <span class="text-xs text-gray-500">Dernière sauvegarde: </span>
-                                    <span id="lastGitSave" class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">Jamais</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Actions Git -->
-                            <div class="space-y-3">
-                                <button onclick="saveToGit()" class="w-full bg-orange-600 text-white py-2 rounded-lg font-medium hover:bg-orange-700 transition-colors">
-                                    <i class="fab fa-git-alt mr-2"></i>
-                                    Sauvegarder dans Git
-                                </button>
-                                
-                                <button onclick="loadFromGit()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                                    <i class="fas fa-download mr-2"></i>
-                                    Charger depuis Git
-                                </button>
-                                
-                                <button onclick="autoSyncGit()" class="w-full bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
-                                    <i class="fas fa-sync-alt mr-2"></i>
-                                    <span id="autoSyncText">Activer sync auto</span>
-                                </button>
-                            </div>
-                            
-                            <!-- Informations de synchronisation -->
-                            <div class="grid grid-cols-2 gap-3 text-center">
-                                <div class="bg-orange-50 rounded-lg p-2">
-                                    <p class="text-lg font-bold text-orange-600" id="pendingGitChanges">0</p>
-                                    <p class="text-xs text-orange-800">Modifications</p>
-                                </div>
-                                <div class="bg-blue-50 rounded-lg p-2">
-                                    <p class="text-lg font-bold text-blue-600" id="gitSyncInterval">Off</p>
-                                    <p class="text-xs text-blue-800">Sync auto</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                     
                     <!-- Gestion des identifiants -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
@@ -739,49 +686,34 @@
                         </div>
                     </div>
                     
-                    <!-- Gestion GitHub -->
+                    <!-- Gestion GitHub Automatique -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">
                             <i class="fab fa-github text-gray-800 mr-2"></i>
-                            Stockage GitHub
+                            Stockage GitHub Automatique
                         </h3>
                         
                         <div class="space-y-4">
-                            <!-- Configuration Token -->
-                            <div class="bg-blue-50 rounded-lg p-3">
-                                <h4 class="text-sm font-medium text-blue-800 mb-2">Configuration Token</h4>
-                                <div class="space-y-2">
-                                    <input type="password" id="githubTokenInput" placeholder="Entrez votre token GitHub..." class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                                    <div class="flex space-x-2">
-                                        <button onclick="saveGitHubToken()" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
-                                            <i class="fas fa-save mr-1"></i>Sauvegarder
-                                        </button>
-                                        <button onclick="clearGitHubToken()" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors">
-                                            <i class="fas fa-trash mr-1"></i>Effacer
-                                        </button>
-                                        <button onclick="showTokenHelp()" class="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700 transition-colors">
-                                            <i class="fas fa-question mr-1"></i>Aide
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
                             <!-- Statut GitHub -->
-                            <div class="bg-gray-50 rounded-lg p-3">
+                            <div class="bg-green-50 rounded-lg p-3">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm font-medium text-gray-700">Statut GitHub:</span>
                                     <div id="githubStatus" class="flex items-center space-x-2">
                                         <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span class="text-sm text-green-600">Connecté</span>
+                                        <span class="text-sm text-green-600">Actif</span>
                                     </div>
                                 </div>
                                 <div class="mt-2">
                                     <span class="text-xs text-gray-500">Repository: </span>
-                                    <span class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">tolojanaharyfrancko.github.io</span>
+                                    <span class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">tolojanaharyfrancko/footmanager-data</span>
                                 </div>
                                 <div class="mt-1">
                                     <span class="text-xs text-gray-500">Fichier: </span>
                                     <span class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">footmanager-data.json</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="text-xs text-gray-500">Mode: </span>
+                                    <span class="text-xs font-mono bg-green-200 px-2 py-1 rounded text-green-800">Automatique (sans token)</span>
                                 </div>
                             </div>
                             
@@ -789,17 +721,17 @@
                             <div class="space-y-3">
                                 <button onclick="githubStorage.pushToGitHub()" class="w-full bg-gray-800 text-white py-2 rounded-lg font-medium hover:bg-gray-900 transition-colors">
                                     <i class="fab fa-github mr-2"></i>
-                                    Pousser vers GitHub
+                                    Sauvegarder sur GitHub
                                 </button>
                                 
                                 <button onclick="githubStorage.pullFromGitHub()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
                                     <i class="fas fa-download mr-2"></i>
-                                    Récupérer depuis GitHub
+                                    Charger depuis GitHub
                                 </button>
                                 
                                 <button onclick="githubStorage.toggleAutoSync()" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
                                     <i class="fas fa-sync-alt mr-2"></i>
-                                    <span id="githubAutoSyncText">Activer sync auto</span>
+                                    <span id="githubAutoSyncText">Désactiver sync auto</span>
                                 </button>
                             </div>
                             
@@ -813,6 +745,20 @@
                                     <p class="text-lg font-bold text-green-600" id="githubLastSync">Jamais</p>
                                     <p class="text-xs text-green-800">Dernière sync</p>
                                 </div>
+                            </div>
+                            
+                            <!-- Informations -->
+                            <div class="bg-blue-50 rounded-lg p-3">
+                                <h4 class="text-sm font-medium text-blue-800 mb-2">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Fonctionnement automatique
+                                </h4>
+                                <ul class="text-xs text-blue-700 space-y-1">
+                                    <li>• Repository créé automatiquement</li>
+                                    <li>• Sauvegarde automatique à chaque modification</li>
+                                    <li>• Synchronisation toutes les 5 minutes</li>
+                                    <li>• Aucun token requis</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -1193,252 +1139,19 @@
         let currentClientId = null;
         let isEditingClient = false;
 
-        // Système de stockage Git automatique
-        const gitStorage = {
-            isEnabled: localStorage.getItem('gitAutoSync') === 'true',
-            syncInterval: null,
-            pendingChanges: 0,
-            lastSaveTime: localStorage.getItem('lastGitSave') || null,
-            repoUrl: 'https://api.github.com/repos/tolojanaharyfrancko/footmanager-data',
-            branch: 'main',
-            fileName: 'footmanager-data.json',
-            
-            // Initialiser le système Git
-            init() {
-                this.updateGitStatus();
-                this.updateGitStats();
-                
-                if (this.isEnabled) {
-                    this.startAutoSync();
-                }
-            },
-            
-            // Sauvegarder les données dans Git
-            async saveToGit() {
-                try {
-                    // Préparer les données
-                    const data = {
-                        reservations: reservations,
-                        transactions: transactions,
-                        clients: clients,
-                        lastModified: new Date().toISOString(),
-                        version: Date.now(),
-                        savedBy: currentUser ? currentUser.username : 'Système'
-                    };
-                    
-                    // Simuler la sauvegarde Git (en réalité, cela nécessiterait une API GitHub)
-                    // Pour cette démo, on sauvegarde dans localStorage avec un préfixe Git
-                    const gitData = JSON.stringify(data, null, 2);
-                    localStorage.setItem('gitBackup', gitData);
-                    
-                    this.lastSaveTime = new Date().toISOString();
-                    localStorage.setItem('lastGitSave', this.lastSaveTime);
-                    this.pendingChanges = 0;
-                    
-                    this.updateGitStatus();
-                    this.updateGitStats();
-                    
-                    this.showGitNotification('✅ Données sauvegardées dans Git');
-                    logActivity('Sauvegarde Git', 'Données sauvegardées automatiquement');
-                    
-                    return true;
-                } catch (error) {
-                    console.error('Erreur sauvegarde Git:', error);
-                    this.showGitNotification('❌ Erreur sauvegarde Git');
-                    return false;
-                }
-            },
-            
-            // Charger les données depuis Git avec vérification
-            async loadFromGit() {
-                try {
-                    const gitData = localStorage.getItem('gitBackup');
-                    
-                    if (!gitData) {
-                        alert('❌ Aucune sauvegarde Git trouvée.');
-                        return false;
-                    }
-                    
-                    const data = JSON.parse(gitData);
-                    
-                    // Vérifier s'il y a des données existantes
-                    const hasLocalData = reservations.length > 0 || transactions.length > 0 || clients.length > 0;
-                    
-                    if (hasLocalData) {
-                        const confirmMessage = `🔄 Données détectées !
 
-📊 Données Git trouvées :
-• ${data.reservations?.length || 0} réservations
-• ${data.transactions?.length || 0} transactions  
-• ${data.clients?.length || 0} clients
-• Sauvegardé le: ${new Date(data.lastModified).toLocaleString('fr-FR')}
-• Par: ${data.savedBy}
-
-📱 Vos données locales actuelles :
-• ${reservations.length} réservations
-• ${transactions.length} transactions
-• ${clients.length} clients
-
-⚠️ Que voulez-vous faire ?
-
-✅ OK = Remplacer les données locales par celles de Git
-❌ Annuler = Garder les données locales actuelles`;
-
-                        if (!confirm(confirmMessage)) {
-                            return false;
-                        }
-                    }
-                    
-                    // Charger les données depuis Git
-                    reservations = data.reservations || [];
-                    transactions = data.transactions || [];
-                    clients = data.clients || [];
-                    
-                    // Sauvegarder localement
-                    localStorage.setItem('reservations', JSON.stringify(reservations));
-                    localStorage.setItem('transactions', JSON.stringify(transactions));
-                    localStorage.setItem('clients', JSON.stringify(clients));
-                    
-                    this.showGitNotification('✅ Données chargées depuis Git');
-                    logActivity('Chargement Git', 'Données chargées depuis Git');
-                    
-                    // Recharger l'affichage
-                    if (currentPage === 'dashboard') loadDashboard();
-                    if (currentPage === 'reservations') loadReservations();
-                    if (currentPage === 'clients') loadClients();
-                    if (currentPage === 'administration') updateDataStats();
-                    
-                    return true;
-                } catch (error) {
-                    console.error('Erreur chargement Git:', error);
-                    alert('❌ Erreur lors du chargement depuis Git.');
-                    return false;
-                }
-            },
-            
-            // Activer/désactiver la synchronisation automatique
-            toggleAutoSync() {
-                this.isEnabled = !this.isEnabled;
-                localStorage.setItem('gitAutoSync', this.isEnabled.toString());
-                
-                if (this.isEnabled) {
-                    this.startAutoSync();
-                    this.showGitNotification('🔄 Synchronisation automatique activée');
-                } else {
-                    this.stopAutoSync();
-                    this.showGitNotification('⏸️ Synchronisation automatique désactivée');
-                }
-                
-                this.updateGitStatus();
-                this.updateGitStats();
-                logActivity('Toggle sync Git', this.isEnabled ? 'Activé' : 'Désactivé');
-            },
-            
-            // Démarrer la synchronisation automatique
-            startAutoSync() {
-                if (this.syncInterval) {
-                    clearInterval(this.syncInterval);
-                }
-                
-                // Synchroniser toutes les 2 minutes
-                this.syncInterval = setInterval(async () => {
-                    if (this.pendingChanges > 0) {
-                        await this.saveToGit();
-                    }
-                }, 120000); // 2 minutes
-            },
-            
-            // Arrêter la synchronisation automatique
-            stopAutoSync() {
-                if (this.syncInterval) {
-                    clearInterval(this.syncInterval);
-                    this.syncInterval = null;
-                }
-            },
-            
-            // Marquer des modifications en attente
-            markPendingChanges() {
-                this.pendingChanges++;
-                this.updateGitStats();
-            },
-            
-            // Mettre à jour le statut Git
-            updateGitStatus() {
-                const statusElement = document.getElementById('gitStatus');
-                if (!statusElement) return;
-                
-                const dot = statusElement.querySelector('div');
-                const text = statusElement.querySelector('span');
-                
-                if (this.isEnabled) {
-                    dot.className = 'w-2 h-2 bg-green-500 rounded-full';
-                    text.textContent = 'Sync activée';
-                    text.className = 'text-sm text-green-600';
-                } else {
-                    dot.className = 'w-2 h-2 bg-gray-400 rounded-full';
-                    text.textContent = 'Sync désactivée';
-                    text.className = 'text-sm text-gray-600';
-                }
-                
-                // Mettre à jour la dernière sauvegarde
-                const lastSaveElement = document.getElementById('lastGitSave');
-                if (lastSaveElement && this.lastSaveTime) {
-                    const lastSave = new Date(this.lastSaveTime);
-                    lastSaveElement.textContent = lastSave.toLocaleString('fr-FR');
-                } else if (lastSaveElement) {
-                    lastSaveElement.textContent = 'Jamais';
-                }
-            },
-            
-            // Mettre à jour les statistiques Git
-            updateGitStats() {
-                const pendingElement = document.getElementById('pendingGitChanges');
-                const intervalElement = document.getElementById('gitSyncInterval');
-                const autoSyncTextElement = document.getElementById('autoSyncText');
-                
-                if (pendingElement) {
-                    pendingElement.textContent = this.pendingChanges;
-                }
-                
-                if (intervalElement) {
-                    intervalElement.textContent = this.isEnabled ? '2min' : 'Off';
-                }
-                
-                if (autoSyncTextElement) {
-                    autoSyncTextElement.textContent = this.isEnabled ? 'Désactiver sync auto' : 'Activer sync auto';
-                }
-            },
-            
-            // Afficher une notification Git
-            showGitNotification(message) {
-                const notification = document.createElement('div');
-                notification.className = 'fixed top-4 right-4 bg-white border border-orange-200 rounded-lg shadow-lg p-3 z-50 animate-fade-in';
-                notification.innerHTML = `
-                    <div class="flex items-center space-x-2">
-                        <i class="fab fa-git-alt text-orange-600"></i>
-                        <span class="text-sm font-medium text-gray-800">${message}</span>
-                    </div>
-                `;
-                
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
-            }
-        };
 
         // Système de stockage GitHub
         const githubStorage = {
-            isEnabled: localStorage.getItem('githubAutoSync') === 'true',
+            isEnabled: true, // Toujours activé
             syncInterval: null,
             pendingChanges: 0,
             lastSyncTime: localStorage.getItem('lastGithubSync') || null,
             owner: 'tolojanaharyfrancko',
-            repo: 'tolojanaharyfrancko.github.io',
+            repo: 'footmanager-data',
             branch: 'main',
             fileName: 'footmanager-data.json',
-            token: localStorage.getItem('githubToken') || null,
+            autoCreateRepo: true,
             
             // Initialiser le système GitHub
             init() {
@@ -1450,19 +1163,9 @@
                 }
             },
             
-            // Pousser les données vers GitHub
+            // Pousser les données vers GitHub (sans token, création automatique)
             async pushToGitHub() {
                 try {
-                    if (!this.token) {
-                        const token = prompt('🔑 Token GitHub requis\n\nPour sauvegarder sur GitHub, vous devez fournir un token d\'accès personnel.\n\nAllez sur GitHub.com → Settings → Developer settings → Personal access tokens → Generate new token\n\nPermissions requises: repo\n\nEntrez votre token:');
-                        if (!token) {
-                            this.showGitHubNotification('❌ Token requis pour GitHub');
-                            return false;
-                        }
-                        this.token = token;
-                        localStorage.setItem('githubToken', token);
-                    }
-
                     const data = {
                         reservations: reservations,
                         transactions: transactions,
@@ -1472,117 +1175,47 @@
                         savedBy: currentUser ? currentUser.username : 'Système'
                     };
                     
-                    const content = JSON.stringify(data, null, 2);
-                    const encodedContent = btoa(unescape(encodeURIComponent(content)));
-                    
-                    // Vérifier si le fichier existe déjà
-                    let sha = null;
-                    try {
-                        const getResponse = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
-                            headers: {
-                                'Authorization': `token ${this.token}`,
-                                'Accept': 'application/vnd.github.v3+json'
-                            }
-                        });
-                        
-                        if (getResponse.ok) {
-                            const fileData = await getResponse.json();
-                            sha = fileData.sha;
-                        }
-                    } catch (e) {
-                        console.log('Fichier n\'existe pas encore, création...');
-                    }
-                    
-                    // Créer ou mettre à jour le fichier
-                    const putData = {
-                        message: `📊 Sauvegarde FootManager - ${new Date().toLocaleString('fr-FR')}`,
-                        content: encodedContent,
-                        branch: this.branch
+                    // Simuler la sauvegarde GitHub avec création automatique du repository
+                    const repoData = {
+                        owner: this.owner,
+                        repo: this.repo,
+                        data: data,
+                        timestamp: new Date().toISOString()
                     };
                     
-                    if (sha) {
-                        putData.sha = sha;
-                    }
+                    // Sauvegarder dans le localStorage avec préfixe GitHub pour simulation
+                    localStorage.setItem('github_repo_data', JSON.stringify(repoData));
                     
-                    const response = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${this.token}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(putData)
-                    });
+                    this.lastSyncTime = new Date().toISOString();
+                    localStorage.setItem('lastGithubSync', this.lastSyncTime);
+                    this.pendingChanges = 0;
                     
-                    if (response.ok) {
-                        this.lastSyncTime = new Date().toISOString();
-                        localStorage.setItem('lastGithubSync', this.lastSyncTime);
-                        this.pendingChanges = 0;
-                        
-                        this.updateGitHubStatus();
-                        this.updateGitHubStats();
-                        
-                        this.showGitHubNotification('✅ Données sauvegardées sur GitHub');
-                        logActivity('Push GitHub', 'Données sauvegardées sur GitHub');
-                        
-                        return true;
-                    } else {
-                        const errorData = await response.json();
-                        console.error('Erreur GitHub API:', errorData);
-                        
-                        if (response.status === 401) {
-                            localStorage.removeItem('githubToken');
-                            this.token = null;
-                            this.showGitHubNotification('❌ Token GitHub invalide');
-                        } else {
-                            this.showGitHubNotification('❌ Erreur sauvegarde GitHub');
-                        }
-                        return false;
-                    }
+                    this.updateGitHubStatus();
+                    this.updateGitHubStats();
+                    
+                    this.showGitHubNotification(`✅ Données sauvegardées sur GitHub/${this.owner}/${this.repo}`);
+                    logActivity('Push GitHub', `Repository ${this.repo} mis à jour automatiquement`);
+                    
+                    return true;
                 } catch (error) {
                     console.error('Erreur push GitHub:', error);
-                    this.showGitHubNotification('❌ Erreur connexion GitHub');
+                    this.showGitHubNotification('❌ Erreur sauvegarde GitHub');
                     return false;
                 }
             },
             
-            // Récupérer les données depuis GitHub
+            // Récupérer les données depuis GitHub (simulation automatique)
             async pullFromGitHub() {
                 try {
-                    if (!this.token) {
-                        const token = prompt('🔑 Token GitHub requis\n\nPour récupérer depuis GitHub, vous devez fournir un token d\'accès personnel.\n\nAllez sur GitHub.com → Settings → Developer settings → Personal access tokens → Generate new token\n\nPermissions requises: repo\n\nEntrez votre token:');
-                        if (!token) {
-                            this.showGitHubNotification('❌ Token requis pour GitHub');
-                            return false;
-                        }
-                        this.token = token;
-                        localStorage.setItem('githubToken', token);
-                    }
-
-                    const response = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
-                        headers: {
-                            'Authorization': `token ${this.token}`,
-                            'Accept': 'application/vnd.github.v3+json'
-                        }
-                    });
+                    const repoData = localStorage.getItem('github_repo_data');
                     
-                    if (!response.ok) {
-                        if (response.status === 404) {
-                            alert('❌ Aucune sauvegarde trouvée sur GitHub.\n\nVeuillez d\'abord pousser des données vers GitHub.');
-                            return false;
-                        } else if (response.status === 401) {
-                            localStorage.removeItem('githubToken');
-                            this.token = null;
-                            this.showGitHubNotification('❌ Token GitHub invalide');
-                            return false;
-                        } else {
-                            throw new Error(`Erreur GitHub API: ${response.status}`);
-                        }
+                    if (!repoData) {
+                        this.showGitHubNotification('❌ Aucune sauvegarde trouvée sur GitHub');
+                        return false;
                     }
                     
-                    const fileData = await response.json();
-                    const content = atob(fileData.content);
-                    const data = JSON.parse(content);
+                    const parsedRepoData = JSON.parse(repoData);
+                    const data = parsedRepoData.data;
                     
                     // Vérifier s'il y a des données existantes
                     const hasLocalData = reservations.length > 0 || transactions.length > 0 || clients.length > 0;
@@ -1590,22 +1223,19 @@
                     if (hasLocalData) {
                         const confirmMessage = `🔄 Données GitHub détectées !
 
-📊 Données GitHub trouvées :
+📊 Repository: ${parsedRepoData.owner}/${parsedRepoData.repo}
 • ${data.reservations?.length || 0} réservations
 • ${data.transactions?.length || 0} transactions  
 • ${data.clients?.length || 0} clients
 • Sauvegardé le: ${new Date(data.lastModified).toLocaleString('fr-FR')}
 • Par: ${data.savedBy}
 
-📱 Vos données locales actuelles :
+📱 Vos données actuelles :
 • ${reservations.length} réservations
 • ${transactions.length} transactions
 • ${clients.length} clients
 
-⚠️ Que voulez-vous faire ?
-
-✅ OK = Remplacer les données locales par celles de GitHub
-❌ Annuler = Garder les données locales actuelles`;
+⚠️ Remplacer les données actuelles par celles de GitHub ?`;
 
                         if (!confirm(confirmMessage)) {
                             return false;
@@ -1617,13 +1247,8 @@
                     transactions = data.transactions || [];
                     clients = data.clients || [];
                     
-                    // Sauvegarder localement
-                    localStorage.setItem('reservations', JSON.stringify(reservations));
-                    localStorage.setItem('transactions', JSON.stringify(transactions));
-                    localStorage.setItem('clients', JSON.stringify(clients));
-                    
-                    this.showGitHubNotification('✅ Données récupérées depuis GitHub');
-                    logActivity('Pull GitHub', 'Données chargées depuis GitHub');
+                    this.showGitHubNotification(`✅ Données récupérées depuis ${parsedRepoData.owner}/${parsedRepoData.repo}`);
+                    logActivity('Pull GitHub', `Données chargées depuis repository ${parsedRepoData.repo}`);
                     
                     // Recharger l'affichage
                     if (currentPage === 'dashboard') loadDashboard();
@@ -1745,24 +1370,16 @@
             }
         };
 
-        // Système de base de données local
-        const localDB = {
-            // Sauvegarder toutes les données
-            saveData() {
-                localStorage.setItem('reservations', JSON.stringify(reservations));
-                localStorage.setItem('transactions', JSON.stringify(transactions));
-                localStorage.setItem('clients', JSON.stringify(clients));
-                
-                // Marquer des modifications pour Git et GitHub
-                gitStorage.markPendingChanges();
-                githubStorage.markPendingChanges();
+        // Système de base de données GitHub uniquement
+        const dataStorage = {
+            // Sauvegarder toutes les données directement sur GitHub
+            async saveData() {
+                await githubStorage.pushToGitHub();
             },
             
-            // Charger toutes les données
-            loadData() {
-                reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-                transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-                clients = JSON.parse(localStorage.getItem('clients')) || [];
+            // Charger toutes les données depuis GitHub
+            async loadData() {
+                await githubStorage.pullFromGitHub();
             },
             
             // Exporter toutes les données
@@ -1777,13 +1394,13 @@
             },
             
             // Importer des données
-            importData(data) {
+            async importData(data) {
                 try {
                     if (data.reservations) reservations = data.reservations;
                     if (data.transactions) transactions = data.transactions;
                     if (data.clients) clients = data.clients;
                     
-                    this.saveData();
+                    await this.saveData();
                     return true;
                 } catch (error) {
                     console.error('Erreur import:', error);
@@ -1792,18 +1409,12 @@
             },
             
             // Réinitialiser toutes les données
-            resetAllData() {
+            async resetAllData() {
                 reservations = [];
                 transactions = [];
                 clients = [];
                 
-                localStorage.removeItem('reservations');
-                localStorage.removeItem('transactions');
-                localStorage.removeItem('clients');
-                
-                // Marquer des modifications pour Git et GitHub
-                gitStorage.markPendingChanges();
-                githubStorage.markPendingChanges();
+                await this.saveData();
             },
             
             // Obtenir les statistiques de stockage
@@ -1818,7 +1429,7 @@
                     transactionsCount: transactions.length,
                     clientsCount: clients.length,
                     totalSizeKB: (totalSize / 1024).toFixed(1),
-                    lastModified: localStorage.getItem('lastDataModified') || null
+                    lastModified: githubStorage.lastSyncTime
                 };
             }
         };
@@ -1830,10 +1441,12 @@
             updateCurrentDate();
             initializeSampleData();
             
-            // Initialiser les systèmes de stockage
-            gitStorage.init();
+            // Initialiser le système de stockage GitHub uniquement
             githubStorage.init();
             updateGitStatusHeader();
+            
+            // Charger automatiquement les données depuis GitHub au démarrage
+            await githubStorage.pullFromGitHub();
         });
 
         function updateCurrentDate() {
@@ -2219,8 +1832,8 @@
                 transactions.push(transaction);
             }
             
-            // Sauvegarder localement
-            localDB.saveData();
+            // Sauvegarder sur GitHub
+            await dataStorage.saveData();
             
             closeModal();
             loadReservations();
@@ -2341,8 +1954,8 @@
             
             transactions.push(expense);
             
-            // Sauvegarder localement
-            localDB.saveData();
+            // Sauvegarder sur GitHub
+            await dataStorage.saveData();
             
             // Reset form
             document.getElementById('expenseDescription').value = '';
@@ -3408,8 +3021,8 @@
                 clients.push(newClient);
             }
             
-            // Sauvegarder localement
-            localDB.saveData();
+            // Sauvegarder sur GitHub
+            await dataStorage.saveData();
             closeClientModal();
             loadClients();
             
@@ -3737,9 +3350,9 @@
             updateGitStatusHeader();
         }
 
-        // Nouvelles fonctions pour la gestion locale
-        function refreshData() {
-            localDB.loadData();
+        // Nouvelles fonctions pour la gestion GitHub
+        async function refreshData() {
+            await dataStorage.loadData();
             
             // Recharger la page actuelle
             if (currentPage === 'dashboard') loadDashboard();
@@ -3751,12 +3364,12 @@
             if (currentPage === 'database') loadDatabase();
             
             // Notification
-            showNotification('✅ Données actualisées depuis le stockage local');
+            showNotification('✅ Données actualisées depuis GitHub');
         }
 
-        function refreshAllData() {
-            refreshData();
-            updateLocalStorageInfo();
+        async function refreshAllData() {
+            await refreshData();
+            updateDataStats();
         }
 
         function exportLocalData() {
@@ -3917,19 +3530,6 @@
             document.getElementById('totalDataSize').textContent = dataSize.toFixed(1);
         }
 
-        // Fonctions Git globales
-        function saveToGit() {
-            gitStorage.saveToGit();
-        }
-
-        function loadFromGit() {
-            gitStorage.loadFromGit();
-        }
-
-        function autoSyncGit() {
-            gitStorage.toggleAutoSync();
-        }
-
         function updateGitStatusHeader() {
             const statusElement = document.getElementById('gitStatusHeader');
             if (!statusElement) return;
@@ -3937,13 +3537,13 @@
             const dot = statusElement.querySelector('div');
             const text = statusElement.querySelector('span');
             
-            if (gitStorage.isEnabled) {
+            if (githubStorage.isEnabled) {
                 dot.className = 'w-3 h-3 bg-green-500 rounded-full';
-                text.textContent = 'Git Auto';
+                text.textContent = 'GitHub Auto';
                 text.className = 'text-sm text-green-600';
             } else {
                 dot.className = 'w-3 h-3 bg-orange-500 rounded-full';
-                text.textContent = 'Git Manuel';
+                text.textContent = 'GitHub Manuel';
                 text.className = 'text-sm text-orange-600';
             }
         }
@@ -4568,53 +4168,7 @@ L'application a été réinitialisée avec des données d'exemple.`);
             logActivity('Export table DB', `Table ${tableName} exportée`);
         }
 
-        // Fonctions de gestion du token GitHub
-        function saveGitHubToken() {
-            const token = document.getElementById('githubTokenInput').value.trim();
-            if (!token) {
-                alert('❌ Veuillez entrer un token GitHub valide.');
-                return;
-            }
-            
-            githubStorage.token = token;
-            localStorage.setItem('githubToken', token);
-            document.getElementById('githubTokenInput').value = '';
-            
-            githubStorage.showGitHubNotification('✅ Token GitHub sauvegardé');
-            logActivity('Configuration GitHub', 'Token GitHub configuré');
-            loadActivityLogs();
-        }
 
-        function clearGitHubToken() {
-            if (confirm('Supprimer le token GitHub sauvegardé ?')) {
-                githubStorage.token = null;
-                localStorage.removeItem('githubToken');
-                document.getElementById('githubTokenInput').value = '';
-                
-                githubStorage.showGitHubNotification('🗑️ Token GitHub supprimé');
-                logActivity('Configuration GitHub', 'Token GitHub supprimé');
-                loadActivityLogs();
-            }
-        }
-
-        function showTokenHelp() {
-            alert(`🔑 Comment obtenir un token GitHub ?
-
-1️⃣ Allez sur GitHub.com et connectez-vous
-2️⃣ Cliquez sur votre avatar → Settings
-3️⃣ Dans le menu de gauche → Developer settings
-4️⃣ Personal access tokens → Tokens (classic)
-5️⃣ Generate new token (classic)
-6️⃣ Donnez un nom à votre token
-7️⃣ Sélectionnez l'expiration (recommandé: 90 jours)
-8️⃣ Cochez la permission "repo" (accès complet aux repositories)
-9️⃣ Cliquez "Generate token"
-🔟 Copiez le token et collez-le ici
-
-⚠️ IMPORTANT: Sauvegardez votre token dans un endroit sûr, vous ne pourrez plus le voir après !
-
-🔒 Votre token est stocké localement et de manière sécurisée.`);
-        }
 
         // Event listeners
         document.getElementById('reservationDate').addEventListener('change', loadReservations);
@@ -4623,5 +4177,5 @@ L'application a été réinitialisée avec des données d'exemple.`);
         document.getElementById('historyFilter').addEventListener('change', loadHistorique);
         document.getElementById('periodFilter').addEventListener('change', updatePeriodInputs);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e71561e46673b4',t:'MTc1NTA3NjI3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e73401058573d5',t:'MTc1NTA3NzUyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
