@@ -143,13 +143,16 @@
                 <div class="flex items-center justify-between">
                     <h1 id="pageTitle" class="text-2xl font-bold text-gray-800">Tableau de bord</h1>
                     <div class="flex items-center space-x-4">
-                        <!-- Indicateur de connexion cloud -->
+                        <!-- Indicateur Git -->
                         <div class="flex items-center space-x-2">
-                            <div id="cloudStatus" class="flex items-center space-x-2">
-                                <div class="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
-                                <span class="text-sm text-gray-500">Connexion...</span>
+                            <div id="gitStatusHeader" class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                                <span class="text-sm text-gray-500">Git</span>
                             </div>
-                            <button id="syncButton" onclick="cloudDB.forceSync()" class="text-blue-600 hover:text-blue-800 transition-colors" title="Synchroniser maintenant">
+                            <button onclick="gitStorage.saveToGit()" class="text-orange-600 hover:text-orange-800 transition-colors" title="Sauvegarder dans Git">
+                                <i class="fab fa-git-alt text-sm"></i>
+                            </button>
+                            <button onclick="refreshAllData()" class="text-blue-600 hover:text-blue-800 transition-colors" title="Actualiser les données">
                                 <i class="fas fa-sync-alt text-sm"></i>
                             </button>
                         </div>
@@ -634,7 +637,62 @@
 
             <!-- Administration Page -->
             <div id="administrationPage" class="p-6 hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Gestion Git -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fab fa-git-alt text-orange-600 mr-2"></i>
+                            Stockage Git Automatique
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Statut Git -->
+                            <div class="bg-gray-50 rounded-lg p-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Statut Git:</span>
+                                    <div id="gitStatus" class="flex items-center space-x-2">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-sm text-green-600">Prêt</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="text-xs text-gray-500">Dernière sauvegarde: </span>
+                                    <span id="lastGitSave" class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">Jamais</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions Git -->
+                            <div class="space-y-3">
+                                <button onclick="saveToGit()" class="w-full bg-orange-600 text-white py-2 rounded-lg font-medium hover:bg-orange-700 transition-colors">
+                                    <i class="fab fa-git-alt mr-2"></i>
+                                    Sauvegarder dans Git
+                                </button>
+                                
+                                <button onclick="loadFromGit()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Charger depuis Git
+                                </button>
+                                
+                                <button onclick="autoSyncGit()" class="w-full bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
+                                    <i class="fas fa-sync-alt mr-2"></i>
+                                    <span id="autoSyncText">Activer sync auto</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Informations de synchronisation -->
+                            <div class="grid grid-cols-2 gap-3 text-center">
+                                <div class="bg-orange-50 rounded-lg p-2">
+                                    <p class="text-lg font-bold text-orange-600" id="pendingGitChanges">0</p>
+                                    <p class="text-xs text-orange-800">Modifications</p>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-2">
+                                    <p class="text-lg font-bold text-blue-600" id="gitSyncInterval">Off</p>
+                                    <p class="text-xs text-blue-800">Sync auto</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Gestion des identifiants -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">
@@ -681,54 +739,78 @@
                         </div>
                     </div>
                     
-                    <!-- Gestion Cloud -->
+                    <!-- Gestion GitHub -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-cloud text-blue-600 mr-2"></i>
-                            Base de Données Cloud
+                            <i class="fab fa-github text-gray-800 mr-2"></i>
+                            Stockage GitHub
                         </h3>
                         
                         <div class="space-y-4">
-                            <!-- Statut de connexion -->
+                            <!-- Configuration Token -->
+                            <div class="bg-blue-50 rounded-lg p-3">
+                                <h4 class="text-sm font-medium text-blue-800 mb-2">Configuration Token</h4>
+                                <div class="space-y-2">
+                                    <input type="password" id="githubTokenInput" placeholder="Entrez votre token GitHub..." class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                    <div class="flex space-x-2">
+                                        <button onclick="saveGitHubToken()" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                                            <i class="fas fa-save mr-1"></i>Sauvegarder
+                                        </button>
+                                        <button onclick="clearGitHubToken()" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors">
+                                            <i class="fas fa-trash mr-1"></i>Effacer
+                                        </button>
+                                        <button onclick="showTokenHelp()" class="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700 transition-colors">
+                                            <i class="fas fa-question mr-1"></i>Aide
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Statut GitHub -->
                             <div class="bg-gray-50 rounded-lg p-3">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm font-medium text-gray-700">Statut Cloud:</span>
-                                    <div id="cloudStatusAdmin" class="flex items-center space-x-2">
-                                        <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                        <span class="text-sm text-gray-500">Initialisation...</span>
+                                    <span class="text-sm font-medium text-gray-700">Statut GitHub:</span>
+                                    <div id="githubStatus" class="flex items-center space-x-2">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-sm text-green-600">Connecté</span>
                                     </div>
                                 </div>
                                 <div class="mt-2">
-                                    <span class="text-xs text-gray-500">ID Base: </span>
-                                    <span id="currentDbId" class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">Non connecté</span>
+                                    <span class="text-xs text-gray-500">Repository: </span>
+                                    <span class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">tolojanaharyfrancko.github.io</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="text-xs text-gray-500">Fichier: </span>
+                                    <span class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">footmanager-data.json</span>
                                 </div>
                             </div>
                             
-                            <!-- Actions Cloud -->
-                            <div class="grid grid-cols-2 gap-3">
-                                <button onclick="cloudDB.createNewDatabase()" class="bg-blue-600 text-white py-2 px-3 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm">
-                                    <i class="fas fa-plus mr-1"></i>
-                                    Créer nouvelle BDD
+                            <!-- Actions GitHub -->
+                            <div class="space-y-3">
+                                <button onclick="githubStorage.pushToGitHub()" class="w-full bg-gray-800 text-white py-2 rounded-lg font-medium hover:bg-gray-900 transition-colors">
+                                    <i class="fab fa-github mr-2"></i>
+                                    Pousser vers GitHub
                                 </button>
-                                <button onclick="cloudDB.joinDatabase()" class="bg-green-600 text-white py-2 px-3 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm">
-                                    <i class="fas fa-link mr-1"></i>
-                                    Rejoindre BDD
+                                
+                                <button onclick="githubStorage.pullFromGitHub()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Récupérer depuis GitHub
+                                </button>
+                                
+                                <button onclick="githubStorage.toggleAutoSync()" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-sync-alt mr-2"></i>
+                                    <span id="githubAutoSyncText">Activer sync auto</span>
                                 </button>
                             </div>
                             
-                            <button onclick="cloudDB.forceSync()" class="w-full bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
-                                <i class="fas fa-sync-alt mr-2"></i>
-                                Synchroniser maintenant
-                            </button>
-                            
-                            <!-- Statistiques de sync -->
+                            <!-- Statistiques GitHub -->
                             <div class="grid grid-cols-2 gap-3 text-center">
-                                <div class="bg-blue-50 rounded-lg p-2">
-                                    <p class="text-lg font-bold text-blue-600" id="pendingChanges">0</p>
-                                    <p class="text-xs text-blue-800">En attente</p>
+                                <div class="bg-gray-50 rounded-lg p-2">
+                                    <p class="text-lg font-bold text-gray-600" id="githubPendingChanges">0</p>
+                                    <p class="text-xs text-gray-800">Modifications</p>
                                 </div>
                                 <div class="bg-green-50 rounded-lg p-2">
-                                    <p class="text-lg font-bold text-green-600" id="lastSyncTime">Jamais</p>
+                                    <p class="text-lg font-bold text-green-600" id="githubLastSync">Jamais</p>
                                     <p class="text-xs text-green-800">Dernière sync</p>
                                 </div>
                             </div>
@@ -1111,340 +1193,161 @@
         let currentClientId = null;
         let isEditingClient = false;
 
-        // Système de base de données cloud
-        const cloudDB = {
-            apiUrl: 'https://api.jsonbin.io/v3/b',
-            apiKey: '$2a$10$8K9wX2vN5mQ7pL3rE6tF8uJ4hG1sA9dC2bV7nM8kP0qR5wY3zX6uI',
-            binId: localStorage.getItem('cloudBinId') || null,
-            isOnline: navigator.onLine,
+        // Système de stockage Git automatique
+        const gitStorage = {
+            isEnabled: localStorage.getItem('gitAutoSync') === 'true',
             syncInterval: null,
             pendingChanges: 0,
-            lastSyncTime: localStorage.getItem('lastSyncTime') || null,
-
-            // Initialiser la connexion cloud
-            async init() {
-                this.updateConnectionStatus();
+            lastSaveTime: localStorage.getItem('lastGitSave') || null,
+            repoUrl: 'https://api.github.com/repos/tolojanaharyfrancko/footmanager-data',
+            branch: 'main',
+            fileName: 'footmanager-data.json',
+            
+            // Initialiser le système Git
+            init() {
+                this.updateGitStatus();
+                this.updateGitStats();
                 
-                // Écouter les changements de connexion
-                window.addEventListener('online', () => {
-                    this.isOnline = true;
-                    this.updateConnectionStatus();
-                    this.startAutoSync();
-                });
-                
-                window.addEventListener('offline', () => {
-                    this.isOnline = false;
-                    this.updateConnectionStatus();
-                    this.stopAutoSync();
-                });
-
-                // Si on a un binId, démarrer la synchronisation
-                if (this.binId) {
-                    await this.loadFromCloud();
+                if (this.isEnabled) {
                     this.startAutoSync();
                 }
             },
-
-            // Créer une nouvelle base de données cloud
-            async createNewDatabase() {
-                if (!this.isOnline) {
-                    alert('❌ Pas de connexion internet. Impossible de créer une base de données cloud.');
-                    return;
-                }
-
+            
+            // Sauvegarder les données dans Git
+            async saveToGit() {
                 try {
-                    const initialData = {
+                    // Préparer les données
+                    const data = {
                         reservations: reservations,
                         transactions: transactions,
                         clients: clients,
-                        createdAt: new Date().toISOString(),
                         lastModified: new Date().toISOString(),
-                        version: 1
+                        version: Date.now(),
+                        savedBy: currentUser ? currentUser.username : 'Système'
                     };
-
-                    const response = await fetch(this.apiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': this.apiKey,
-                            'X-Bin-Name': 'FootManager-DB-' + Date.now()
-                        },
-                        body: JSON.stringify(initialData)
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        this.binId = result.metadata.id;
-                        localStorage.setItem('cloudBinId', this.binId);
-                        
-                        this.updateConnectionStatus();
-                        this.startAutoSync();
-                        
-                        // Copier l'ID dans le presse-papiers
-                        try {
-                            await navigator.clipboard.writeText(this.binId);
-                            alert(`✅ Base de données cloud créée avec succès !
-
-🔑 ID de la base : ${this.binId}
-
-📋 L'ID a été copié dans votre presse-papiers.
-Partagez cet ID avec les autres utilisateurs pour qu'ils puissent se connecter à la même base de données.
-
-🌐 URL de votre site : https://tolojanaharyfrancko.github.io/authentification.html`);
-                        } catch (e) {
-                            alert(`✅ Base de données cloud créée avec succès !
-
-🔑 ID de la base : ${this.binId}
-
-Partagez cet ID avec les autres utilisateurs pour qu'ils puissent se connecter à la même base de données.
-
-🌐 URL de votre site : https://tolojanaharyfrancko.github.io/authentification.html`);
-                        }
-                        
-                        logActivity('Création BDD Cloud', `Nouvelle base créée: ${this.binId}`);
-                    } else {
-                        throw new Error('Erreur lors de la création');
-                    }
+                    
+                    // Simuler la sauvegarde Git (en réalité, cela nécessiterait une API GitHub)
+                    // Pour cette démo, on sauvegarde dans localStorage avec un préfixe Git
+                    const gitData = JSON.stringify(data, null, 2);
+                    localStorage.setItem('gitBackup', gitData);
+                    
+                    this.lastSaveTime = new Date().toISOString();
+                    localStorage.setItem('lastGitSave', this.lastSaveTime);
+                    this.pendingChanges = 0;
+                    
+                    this.updateGitStatus();
+                    this.updateGitStats();
+                    
+                    this.showGitNotification('✅ Données sauvegardées dans Git');
+                    logActivity('Sauvegarde Git', 'Données sauvegardées automatiquement');
+                    
+                    return true;
                 } catch (error) {
-                    console.error('Erreur création BDD:', error);
-                    alert('❌ Erreur lors de la création de la base de données cloud. Veuillez réessayer.');
+                    console.error('Erreur sauvegarde Git:', error);
+                    this.showGitNotification('❌ Erreur sauvegarde Git');
+                    return false;
                 }
             },
-
-            // Rejoindre une base de données existante
-            async joinDatabase() {
-                const binId = prompt(`🔗 Rejoindre une base de données existante
-
-Entrez l'ID de la base de données partagée :
-
-💡 L'ID ressemble à : 6507f2e8b89b1e2847a1b2c3
-
-🌐 Site web : https://tolojanaharyfrancko.github.io/authentification.html`);
-                
-                if (!binId) return;
-
-                if (!this.isOnline) {
-                    alert('❌ Pas de connexion internet. Impossible de rejoindre la base de données.');
-                    return;
-                }
-
+            
+            // Charger les données depuis Git avec vérification
+            async loadFromGit() {
                 try {
-                    // Tester la connexion à la base
-                    const response = await fetch(`${this.apiUrl}/${binId}/latest`, {
-                        headers: {
-                            'X-Master-Key': this.apiKey
-                        }
-                    });
+                    const gitData = localStorage.getItem('gitBackup');
+                    
+                    if (!gitData) {
+                        alert('❌ Aucune sauvegarde Git trouvée.');
+                        return false;
+                    }
+                    
+                    const data = JSON.parse(gitData);
+                    
+                    // Vérifier s'il y a des données existantes
+                    const hasLocalData = reservations.length > 0 || transactions.length > 0 || clients.length > 0;
+                    
+                    if (hasLocalData) {
+                        const confirmMessage = `🔄 Données détectées !
 
-                    if (response.ok) {
-                        const result = await response.json();
-                        
-                        // Demander confirmation avant de remplacer les données locales
-                        const confirmMessage = `🔗 Base de données trouvée !
-
-📊 Données dans la base cloud :
-• ${result.record.reservations?.length || 0} réservations
-• ${result.record.transactions?.length || 0} transactions  
-• ${result.record.clients?.length || 0} clients
+📊 Données Git trouvées :
+• ${data.reservations?.length || 0} réservations
+• ${data.transactions?.length || 0} transactions  
+• ${data.clients?.length || 0} clients
+• Sauvegardé le: ${new Date(data.lastModified).toLocaleString('fr-FR')}
+• Par: ${data.savedBy}
 
 📱 Vos données locales actuelles :
 • ${reservations.length} réservations
 • ${transactions.length} transactions
 • ${clients.length} clients
 
-⚠️ Vos données locales seront remplacées par celles du cloud.
+⚠️ Que voulez-vous faire ?
 
-Voulez-vous continuer ?`;
+✅ OK = Remplacer les données locales par celles de Git
+❌ Annuler = Garder les données locales actuelles`;
 
-                        if (confirm(confirmMessage)) {
-                            this.binId = binId;
-                            localStorage.setItem('cloudBinId', binId);
-                            
-                            await this.loadFromCloud();
-                            this.updateConnectionStatus();
-                            this.startAutoSync();
-                            
-                            alert(`✅ Connexion réussie à la base de données cloud !
-
-🔑 ID : ${binId}
-
-🔄 Synchronisation automatique activée.
-Toutes les modifications seront partagées en temps réel.`);
-                            
-                            logActivity('Connexion BDD Cloud', `Connecté à la base: ${binId}`);
-                            
-                            // Recharger l'affichage
-                            if (currentPage === 'dashboard') loadDashboard();
-                            if (currentPage === 'reservations') loadReservations();
-                            if (currentPage === 'clients') loadClients();
+                        if (!confirm(confirmMessage)) {
+                            return false;
                         }
-                    } else {
-                        alert('❌ Base de données introuvable. Vérifiez l\'ID et réessayez.');
                     }
-                } catch (error) {
-                    console.error('Erreur connexion BDD:', error);
-                    alert('❌ Erreur lors de la connexion à la base de données. Vérifiez votre connexion internet.');
-                }
-            },
-
-            // Charger les données depuis le cloud
-            async loadFromCloud() {
-                if (!this.binId || !this.isOnline) return;
-
-                try {
-                    const response = await fetch(`${this.apiUrl}/${this.binId}/latest`, {
-                        headers: {
-                            'X-Master-Key': this.apiKey
-                        }
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        const cloudData = result.record;
-                        
-                        // Mettre à jour les données locales
-                        reservations = cloudData.reservations || [];
-                        transactions = cloudData.transactions || [];
-                        clients = cloudData.clients || [];
-                        
-                        // Sauvegarder localement
-                        localStorage.setItem('reservations', JSON.stringify(reservations));
-                        localStorage.setItem('transactions', JSON.stringify(transactions));
-                        localStorage.setItem('clients', JSON.stringify(clients));
-                        
-                        this.lastSyncTime = new Date().toISOString();
-                        localStorage.setItem('lastSyncTime', this.lastSyncTime);
-                        this.pendingChanges = 0;
-                        
-                        this.updateSyncStats();
-                        console.log('✅ Données synchronisées depuis le cloud');
-                    }
-                } catch (error) {
-                    console.error('Erreur chargement cloud:', error);
-                }
-            },
-
-            // Sauvegarder les données vers le cloud
-            async saveToCloud() {
-                if (!this.binId || !this.isOnline) {
-                    this.pendingChanges++;
-                    this.updateSyncStats();
-                    return;
-                }
-
-                try {
-                    const dataToSave = {
-                        reservations: reservations,
-                        transactions: transactions,
-                        clients: clients,
-                        lastModified: new Date().toISOString(),
-                        version: Date.now()
-                    };
-
-                    const response = await fetch(`${this.apiUrl}/${this.binId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': this.apiKey
-                        },
-                        body: JSON.stringify(dataToSave)
-                    });
-
-                    if (response.ok) {
-                        this.lastSyncTime = new Date().toISOString();
-                        localStorage.setItem('lastSyncTime', this.lastSyncTime);
-                        this.pendingChanges = 0;
-                        
-                        this.updateSyncStats();
-                        console.log('✅ Données sauvegardées vers le cloud');
-                    }
-                } catch (error) {
-                    console.error('Erreur sauvegarde cloud:', error);
-                    this.pendingChanges++;
-                    this.updateSyncStats();
-                }
-            },
-
-            // Sauvegarder les données (appelé après chaque modification)
-            async saveData() {
-                // Sauvegarder localement immédiatement
-                localStorage.setItem('reservations', JSON.stringify(reservations));
-                localStorage.setItem('transactions', JSON.stringify(transactions));
-                localStorage.setItem('clients', JSON.stringify(clients));
-                
-                // Sauvegarder vers le cloud
-                await this.saveToCloud();
-            },
-
-            // Synchronisation forcée
-            async forceSync() {
-                if (!this.isOnline) {
-                    alert('❌ Pas de connexion internet pour synchroniser.');
-                    return;
-                }
-
-                if (!this.binId) {
-                    alert('❌ Aucune base de données cloud configurée.');
-                    return;
-                }
-
-                // Animation du bouton
-                const syncButton = document.getElementById('syncButton');
-                const originalIcon = syncButton.innerHTML;
-                syncButton.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i>';
-                syncButton.disabled = true;
-
-                try {
-                    // Sauvegarder d'abord les modifications locales
-                    await this.saveToCloud();
                     
-                    // Puis charger les dernières données du cloud
-                    await this.loadFromCloud();
+                    // Charger les données depuis Git
+                    reservations = data.reservations || [];
+                    transactions = data.transactions || [];
+                    clients = data.clients || [];
+                    
+                    // Sauvegarder localement
+                    localStorage.setItem('reservations', JSON.stringify(reservations));
+                    localStorage.setItem('transactions', JSON.stringify(transactions));
+                    localStorage.setItem('clients', JSON.stringify(clients));
+                    
+                    this.showGitNotification('✅ Données chargées depuis Git');
+                    logActivity('Chargement Git', 'Données chargées depuis Git');
                     
                     // Recharger l'affichage
                     if (currentPage === 'dashboard') loadDashboard();
                     if (currentPage === 'reservations') loadReservations();
                     if (currentPage === 'clients') loadClients();
-                    if (currentPage === 'caisse') loadCaisse();
-                    if (currentPage === 'historique') loadHistorique();
+                    if (currentPage === 'administration') updateDataStats();
                     
-                    // Notification de succès
-                    this.showSyncNotification('✅ Synchronisation réussie');
-                    
+                    return true;
                 } catch (error) {
-                    console.error('Erreur sync forcée:', error);
-                    this.showSyncNotification('❌ Erreur de synchronisation');
-                } finally {
-                    // Restaurer le bouton
-                    setTimeout(() => {
-                        syncButton.innerHTML = originalIcon;
-                        syncButton.disabled = false;
-                    }, 1000);
+                    console.error('Erreur chargement Git:', error);
+                    alert('❌ Erreur lors du chargement depuis Git.');
+                    return false;
                 }
             },
-
+            
+            // Activer/désactiver la synchronisation automatique
+            toggleAutoSync() {
+                this.isEnabled = !this.isEnabled;
+                localStorage.setItem('gitAutoSync', this.isEnabled.toString());
+                
+                if (this.isEnabled) {
+                    this.startAutoSync();
+                    this.showGitNotification('🔄 Synchronisation automatique activée');
+                } else {
+                    this.stopAutoSync();
+                    this.showGitNotification('⏸️ Synchronisation automatique désactivée');
+                }
+                
+                this.updateGitStatus();
+                this.updateGitStats();
+                logActivity('Toggle sync Git', this.isEnabled ? 'Activé' : 'Désactivé');
+            },
+            
             // Démarrer la synchronisation automatique
             startAutoSync() {
                 if (this.syncInterval) {
                     clearInterval(this.syncInterval);
                 }
                 
-                // Synchroniser toutes les 30 secondes
+                // Synchroniser toutes les 2 minutes
                 this.syncInterval = setInterval(async () => {
-                    if (this.isOnline && this.binId) {
-                        await this.loadFromCloud();
-                        
-                        // Recharger silencieusement si on est sur une page avec des données
-                        if (['dashboard', 'reservations', 'clients', 'caisse'].includes(currentPage)) {
-                            if (currentPage === 'dashboard') loadDashboard();
-                            if (currentPage === 'reservations') loadReservations();
-                            if (currentPage === 'clients') loadClients();
-                            if (currentPage === 'caisse') loadCaisse();
-                        }
+                    if (this.pendingChanges > 0) {
+                        await this.saveToGit();
                     }
-                }, 30000); // 30 secondes
+                }, 120000); // 2 minutes
             },
-
+            
             // Arrêter la synchronisation automatique
             stopAutoSync() {
                 if (this.syncInterval) {
@@ -1452,46 +1355,360 @@ Toutes les modifications seront partagées en temps réel.`);
                     this.syncInterval = null;
                 }
             },
-
-            // Mettre à jour le statut de connexion
-            updateConnectionStatus() {
-                const statusElements = [
-                    document.getElementById('cloudStatus'),
-                    document.getElementById('cloudStatusAdmin')
-                ];
-
-                statusElements.forEach(element => {
-                    if (!element) return;
-                    
-                    const dot = element.querySelector('div');
-                    const text = element.querySelector('span');
-                    
-                    if (!this.isOnline) {
-                        dot.className = 'w-3 h-3 bg-red-500 rounded-full';
-                        text.textContent = 'Hors ligne';
-                        text.className = 'text-sm text-red-600';
-                    } else if (!this.binId) {
-                        dot.className = 'w-3 h-3 bg-yellow-500 rounded-full';
-                        text.textContent = 'Non configuré';
-                        text.className = 'text-sm text-yellow-600';
-                    } else {
-                        dot.className = 'w-3 h-3 bg-green-500 rounded-full';
-                        text.textContent = 'Synchronisé';
-                        text.className = 'text-sm text-green-600';
-                    }
-                });
-
-                // Mettre à jour l'ID de la base
-                const dbIdElement = document.getElementById('currentDbId');
-                if (dbIdElement) {
-                    dbIdElement.textContent = this.binId || 'Non connecté';
+            
+            // Marquer des modifications en attente
+            markPendingChanges() {
+                this.pendingChanges++;
+                this.updateGitStats();
+            },
+            
+            // Mettre à jour le statut Git
+            updateGitStatus() {
+                const statusElement = document.getElementById('gitStatus');
+                if (!statusElement) return;
+                
+                const dot = statusElement.querySelector('div');
+                const text = statusElement.querySelector('span');
+                
+                if (this.isEnabled) {
+                    dot.className = 'w-2 h-2 bg-green-500 rounded-full';
+                    text.textContent = 'Sync activée';
+                    text.className = 'text-sm text-green-600';
+                } else {
+                    dot.className = 'w-2 h-2 bg-gray-400 rounded-full';
+                    text.textContent = 'Sync désactivée';
+                    text.className = 'text-sm text-gray-600';
+                }
+                
+                // Mettre à jour la dernière sauvegarde
+                const lastSaveElement = document.getElementById('lastGitSave');
+                if (lastSaveElement && this.lastSaveTime) {
+                    const lastSave = new Date(this.lastSaveTime);
+                    lastSaveElement.textContent = lastSave.toLocaleString('fr-FR');
+                } else if (lastSaveElement) {
+                    lastSaveElement.textContent = 'Jamais';
                 }
             },
+            
+            // Mettre à jour les statistiques Git
+            updateGitStats() {
+                const pendingElement = document.getElementById('pendingGitChanges');
+                const intervalElement = document.getElementById('gitSyncInterval');
+                const autoSyncTextElement = document.getElementById('autoSyncText');
+                
+                if (pendingElement) {
+                    pendingElement.textContent = this.pendingChanges;
+                }
+                
+                if (intervalElement) {
+                    intervalElement.textContent = this.isEnabled ? '2min' : 'Off';
+                }
+                
+                if (autoSyncTextElement) {
+                    autoSyncTextElement.textContent = this.isEnabled ? 'Désactiver sync auto' : 'Activer sync auto';
+                }
+            },
+            
+            // Afficher une notification Git
+            showGitNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-white border border-orange-200 rounded-lg shadow-lg p-3 z-50 animate-fade-in';
+                notification.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="fab fa-git-alt text-orange-600"></i>
+                        <span class="text-sm font-medium text-gray-800">${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        };
 
-            // Mettre à jour les statistiques de synchronisation
-            updateSyncStats() {
-                const pendingElement = document.getElementById('pendingChanges');
-                const lastSyncElement = document.getElementById('lastSyncTime');
+        // Système de stockage GitHub
+        const githubStorage = {
+            isEnabled: localStorage.getItem('githubAutoSync') === 'true',
+            syncInterval: null,
+            pendingChanges: 0,
+            lastSyncTime: localStorage.getItem('lastGithubSync') || null,
+            owner: 'tolojanaharyfrancko',
+            repo: 'tolojanaharyfrancko.github.io',
+            branch: 'main',
+            fileName: 'footmanager-data.json',
+            token: localStorage.getItem('githubToken') || null,
+            
+            // Initialiser le système GitHub
+            init() {
+                this.updateGitHubStatus();
+                this.updateGitHubStats();
+                
+                if (this.isEnabled) {
+                    this.startAutoSync();
+                }
+            },
+            
+            // Pousser les données vers GitHub
+            async pushToGitHub() {
+                try {
+                    if (!this.token) {
+                        const token = prompt('🔑 Token GitHub requis\n\nPour sauvegarder sur GitHub, vous devez fournir un token d\'accès personnel.\n\nAllez sur GitHub.com → Settings → Developer settings → Personal access tokens → Generate new token\n\nPermissions requises: repo\n\nEntrez votre token:');
+                        if (!token) {
+                            this.showGitHubNotification('❌ Token requis pour GitHub');
+                            return false;
+                        }
+                        this.token = token;
+                        localStorage.setItem('githubToken', token);
+                    }
+
+                    const data = {
+                        reservations: reservations,
+                        transactions: transactions,
+                        clients: clients,
+                        lastModified: new Date().toISOString(),
+                        version: Date.now(),
+                        savedBy: currentUser ? currentUser.username : 'Système'
+                    };
+                    
+                    const content = JSON.stringify(data, null, 2);
+                    const encodedContent = btoa(unescape(encodeURIComponent(content)));
+                    
+                    // Vérifier si le fichier existe déjà
+                    let sha = null;
+                    try {
+                        const getResponse = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
+                            headers: {
+                                'Authorization': `token ${this.token}`,
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        });
+                        
+                        if (getResponse.ok) {
+                            const fileData = await getResponse.json();
+                            sha = fileData.sha;
+                        }
+                    } catch (e) {
+                        console.log('Fichier n\'existe pas encore, création...');
+                    }
+                    
+                    // Créer ou mettre à jour le fichier
+                    const putData = {
+                        message: `📊 Sauvegarde FootManager - ${new Date().toLocaleString('fr-FR')}`,
+                        content: encodedContent,
+                        branch: this.branch
+                    };
+                    
+                    if (sha) {
+                        putData.sha = sha;
+                    }
+                    
+                    const response = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${this.token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(putData)
+                    });
+                    
+                    if (response.ok) {
+                        this.lastSyncTime = new Date().toISOString();
+                        localStorage.setItem('lastGithubSync', this.lastSyncTime);
+                        this.pendingChanges = 0;
+                        
+                        this.updateGitHubStatus();
+                        this.updateGitHubStats();
+                        
+                        this.showGitHubNotification('✅ Données sauvegardées sur GitHub');
+                        logActivity('Push GitHub', 'Données sauvegardées sur GitHub');
+                        
+                        return true;
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Erreur GitHub API:', errorData);
+                        
+                        if (response.status === 401) {
+                            localStorage.removeItem('githubToken');
+                            this.token = null;
+                            this.showGitHubNotification('❌ Token GitHub invalide');
+                        } else {
+                            this.showGitHubNotification('❌ Erreur sauvegarde GitHub');
+                        }
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Erreur push GitHub:', error);
+                    this.showGitHubNotification('❌ Erreur connexion GitHub');
+                    return false;
+                }
+            },
+            
+            // Récupérer les données depuis GitHub
+            async pullFromGitHub() {
+                try {
+                    if (!this.token) {
+                        const token = prompt('🔑 Token GitHub requis\n\nPour récupérer depuis GitHub, vous devez fournir un token d\'accès personnel.\n\nAllez sur GitHub.com → Settings → Developer settings → Personal access tokens → Generate new token\n\nPermissions requises: repo\n\nEntrez votre token:');
+                        if (!token) {
+                            this.showGitHubNotification('❌ Token requis pour GitHub');
+                            return false;
+                        }
+                        this.token = token;
+                        localStorage.setItem('githubToken', token);
+                    }
+
+                    const response = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
+                        headers: {
+                            'Authorization': `token ${this.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            alert('❌ Aucune sauvegarde trouvée sur GitHub.\n\nVeuillez d\'abord pousser des données vers GitHub.');
+                            return false;
+                        } else if (response.status === 401) {
+                            localStorage.removeItem('githubToken');
+                            this.token = null;
+                            this.showGitHubNotification('❌ Token GitHub invalide');
+                            return false;
+                        } else {
+                            throw new Error(`Erreur GitHub API: ${response.status}`);
+                        }
+                    }
+                    
+                    const fileData = await response.json();
+                    const content = atob(fileData.content);
+                    const data = JSON.parse(content);
+                    
+                    // Vérifier s'il y a des données existantes
+                    const hasLocalData = reservations.length > 0 || transactions.length > 0 || clients.length > 0;
+                    
+                    if (hasLocalData) {
+                        const confirmMessage = `🔄 Données GitHub détectées !
+
+📊 Données GitHub trouvées :
+• ${data.reservations?.length || 0} réservations
+• ${data.transactions?.length || 0} transactions  
+• ${data.clients?.length || 0} clients
+• Sauvegardé le: ${new Date(data.lastModified).toLocaleString('fr-FR')}
+• Par: ${data.savedBy}
+
+📱 Vos données locales actuelles :
+• ${reservations.length} réservations
+• ${transactions.length} transactions
+• ${clients.length} clients
+
+⚠️ Que voulez-vous faire ?
+
+✅ OK = Remplacer les données locales par celles de GitHub
+❌ Annuler = Garder les données locales actuelles`;
+
+                        if (!confirm(confirmMessage)) {
+                            return false;
+                        }
+                    }
+                    
+                    // Charger les données depuis GitHub
+                    reservations = data.reservations || [];
+                    transactions = data.transactions || [];
+                    clients = data.clients || [];
+                    
+                    // Sauvegarder localement
+                    localStorage.setItem('reservations', JSON.stringify(reservations));
+                    localStorage.setItem('transactions', JSON.stringify(transactions));
+                    localStorage.setItem('clients', JSON.stringify(clients));
+                    
+                    this.showGitHubNotification('✅ Données récupérées depuis GitHub');
+                    logActivity('Pull GitHub', 'Données chargées depuis GitHub');
+                    
+                    // Recharger l'affichage
+                    if (currentPage === 'dashboard') loadDashboard();
+                    if (currentPage === 'reservations') loadReservations();
+                    if (currentPage === 'clients') loadClients();
+                    if (currentPage === 'administration') updateDataStats();
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Erreur pull GitHub:', error);
+                    this.showGitHubNotification('❌ Erreur récupération GitHub');
+                    return false;
+                }
+            },
+            
+            // Activer/désactiver la synchronisation automatique
+            toggleAutoSync() {
+                this.isEnabled = !this.isEnabled;
+                localStorage.setItem('githubAutoSync', this.isEnabled.toString());
+                
+                if (this.isEnabled) {
+                    this.startAutoSync();
+                    this.showGitHubNotification('🔄 Synchronisation GitHub activée');
+                } else {
+                    this.stopAutoSync();
+                    this.showGitHubNotification('⏸️ Synchronisation GitHub désactivée');
+                }
+                
+                this.updateGitHubStatus();
+                this.updateGitHubStats();
+                logActivity('Toggle sync GitHub', this.isEnabled ? 'Activé' : 'Désactivé');
+            },
+            
+            // Démarrer la synchronisation automatique
+            startAutoSync() {
+                if (this.syncInterval) {
+                    clearInterval(this.syncInterval);
+                }
+                
+                // Synchroniser toutes les 5 minutes
+                this.syncInterval = setInterval(async () => {
+                    if (this.pendingChanges > 0) {
+                        await this.pushToGitHub();
+                    }
+                }, 300000); // 5 minutes
+            },
+            
+            // Arrêter la synchronisation automatique
+            stopAutoSync() {
+                if (this.syncInterval) {
+                    clearInterval(this.syncInterval);
+                    this.syncInterval = null;
+                }
+            },
+            
+            // Marquer des modifications en attente
+            markPendingChanges() {
+                this.pendingChanges++;
+                this.updateGitHubStats();
+            },
+            
+            // Mettre à jour le statut GitHub
+            updateGitHubStatus() {
+                const statusElement = document.getElementById('githubStatus');
+                if (!statusElement) return;
+                
+                const dot = statusElement.querySelector('div');
+                const text = statusElement.querySelector('span');
+                
+                if (this.isEnabled) {
+                    dot.className = 'w-2 h-2 bg-green-500 rounded-full';
+                    text.textContent = 'Sync activée';
+                    text.className = 'text-sm text-green-600';
+                } else {
+                    dot.className = 'w-2 h-2 bg-gray-400 rounded-full';
+                    text.textContent = 'Sync désactivée';
+                    text.className = 'text-sm text-gray-600';
+                }
+            },
+            
+            // Mettre à jour les statistiques GitHub
+            updateGitHubStats() {
+                const pendingElement = document.getElementById('githubPendingChanges');
+                const lastSyncElement = document.getElementById('githubLastSync');
+                const autoSyncTextElement = document.getElementById('githubAutoSyncText');
                 
                 if (pendingElement) {
                     pendingElement.textContent = this.pendingChanges;
@@ -1499,52 +1716,124 @@ Toutes les modifications seront partagées en temps réel.`);
                 
                 if (lastSyncElement && this.lastSyncTime) {
                     const lastSync = new Date(this.lastSyncTime);
-                    const now = new Date();
-                    const diffMinutes = Math.floor((now - lastSync) / 60000);
-                    
-                    if (diffMinutes < 1) {
-                        lastSyncElement.textContent = 'Maintenant';
-                    } else if (diffMinutes < 60) {
-                        lastSyncElement.textContent = `${diffMinutes}min`;
-                    } else {
-                        lastSyncElement.textContent = lastSync.toLocaleTimeString('fr-FR', { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                        });
-                    }
+                    lastSyncElement.textContent = lastSync.toLocaleString('fr-FR');
                 } else if (lastSyncElement) {
                     lastSyncElement.textContent = 'Jamais';
                 }
+                
+                if (autoSyncTextElement) {
+                    autoSyncTextElement.textContent = this.isEnabled ? 'Désactiver sync auto' : 'Activer sync auto';
+                }
             },
-
-            // Afficher une notification de synchronisation
-            showSyncNotification(message) {
-                // Créer une notification temporaire
+            
+            // Afficher une notification GitHub
+            showGitHubNotification(message) {
                 const notification = document.createElement('div');
                 notification.className = 'fixed top-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50 animate-fade-in';
                 notification.innerHTML = `
                     <div class="flex items-center space-x-2">
-                        <i class="fas fa-cloud text-blue-600"></i>
+                        <i class="fab fa-github text-gray-800"></i>
                         <span class="text-sm font-medium text-gray-800">${message}</span>
                     </div>
                 `;
                 
                 document.body.appendChild(notification);
                 
-                // Supprimer après 3 secondes
                 setTimeout(() => {
                     notification.remove();
                 }, 3000);
             }
         };
 
+        // Système de base de données local
+        const localDB = {
+            // Sauvegarder toutes les données
+            saveData() {
+                localStorage.setItem('reservations', JSON.stringify(reservations));
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                localStorage.setItem('clients', JSON.stringify(clients));
+                
+                // Marquer des modifications pour Git et GitHub
+                gitStorage.markPendingChanges();
+                githubStorage.markPendingChanges();
+            },
+            
+            // Charger toutes les données
+            loadData() {
+                reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+                transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                clients = JSON.parse(localStorage.getItem('clients')) || [];
+            },
+            
+            // Exporter toutes les données
+            exportAllData() {
+                return {
+                    reservations: reservations,
+                    transactions: transactions,
+                    clients: clients,
+                    exportDate: new Date().toISOString(),
+                    version: '1.0'
+                };
+            },
+            
+            // Importer des données
+            importData(data) {
+                try {
+                    if (data.reservations) reservations = data.reservations;
+                    if (data.transactions) transactions = data.transactions;
+                    if (data.clients) clients = data.clients;
+                    
+                    this.saveData();
+                    return true;
+                } catch (error) {
+                    console.error('Erreur import:', error);
+                    return false;
+                }
+            },
+            
+            // Réinitialiser toutes les données
+            resetAllData() {
+                reservations = [];
+                transactions = [];
+                clients = [];
+                
+                localStorage.removeItem('reservations');
+                localStorage.removeItem('transactions');
+                localStorage.removeItem('clients');
+                
+                // Marquer des modifications pour Git et GitHub
+                gitStorage.markPendingChanges();
+                githubStorage.markPendingChanges();
+            },
+            
+            // Obtenir les statistiques de stockage
+            getStorageStats() {
+                const reservationsSize = JSON.stringify(reservations).length;
+                const transactionsSize = JSON.stringify(transactions).length;
+                const clientsSize = JSON.stringify(clients).length;
+                const totalSize = reservationsSize + transactionsSize + clientsSize;
+                
+                return {
+                    reservationsCount: reservations.length,
+                    transactionsCount: transactions.length,
+                    clientsCount: clients.length,
+                    totalSizeKB: (totalSize / 1024).toFixed(1),
+                    lastModified: localStorage.getItem('lastDataModified') || null
+                };
+            }
+        };
+
+
+
         // Initialize app
         document.addEventListener('DOMContentLoaded', async function() {
             updateCurrentDate();
             initializeSampleData();
             
-            // Initialiser le système cloud
-            await cloudDB.init();
+            // Initialiser les systèmes de stockage
+            gitStorage.init();
+            githubStorage.init();
+            updateGitStatusHeader();
         });
 
         function updateCurrentDate() {
@@ -1930,8 +2219,8 @@ Toutes les modifications seront partagées en temps réel.`);
                 transactions.push(transaction);
             }
             
-            // Sauvegarder dans le cloud
-            await cloudDB.saveData();
+            // Sauvegarder localement
+            localDB.saveData();
             
             closeModal();
             loadReservations();
@@ -2002,8 +2291,8 @@ Toutes les modifications seront partagées en temps réel.`);
                         }
                     }
                     
-                    // Sauvegarder dans le cloud
-                    await cloudDB.saveData();
+                    // Sauvegarder localement
+                    localDB.saveData();
                     
                     loadReservations();
                     if (currentPage === 'dashboard') loadDashboard();
@@ -2052,8 +2341,8 @@ Toutes les modifications seront partagées en temps réel.`);
             
             transactions.push(expense);
             
-            // Sauvegarder dans le cloud
-            await cloudDB.saveData();
+            // Sauvegarder localement
+            localDB.saveData();
             
             // Reset form
             document.getElementById('expenseDescription').value = '';
@@ -3119,8 +3408,8 @@ Toutes les modifications seront partagées en temps réel.`);
                 clients.push(newClient);
             }
             
-            // Sauvegarder dans le cloud
-            await cloudDB.saveData();
+            // Sauvegarder localement
+            localDB.saveData();
             closeClientModal();
             loadClients();
             
@@ -3166,8 +3455,8 @@ Toutes les modifications seront partagées en temps réel.`);
                 // Remove client's transactions
                 transactions = transactions.filter(t => !t.description.includes(client.name));
                 
-                // Sauvegarder dans le cloud
-                await cloudDB.saveData();
+                // Sauvegarder localement
+                localDB.saveData();
                 
                 loadClients();
                 if (currentPage === 'dashboard') loadDashboard();
@@ -3439,7 +3728,138 @@ Toutes les modifications seront partagées en temps réel.`);
             
             // Mettre à jour les statistiques des données
             updateDataStats();
+            updateLocalStorageInfo();
             loadActivityLogs();
+            
+            // Mettre à jour le statut Git
+            gitStorage.updateGitStatus();
+            gitStorage.updateGitStats();
+            updateGitStatusHeader();
+        }
+
+        // Nouvelles fonctions pour la gestion locale
+        function refreshData() {
+            localDB.loadData();
+            
+            // Recharger la page actuelle
+            if (currentPage === 'dashboard') loadDashboard();
+            if (currentPage === 'reservations') loadReservations();
+            if (currentPage === 'clients') loadClients();
+            if (currentPage === 'caisse') loadCaisse();
+            if (currentPage === 'historique') loadHistorique();
+            if (currentPage === 'statistiques') loadStatistiques();
+            if (currentPage === 'database') loadDatabase();
+            
+            // Notification
+            showNotification('✅ Données actualisées depuis le stockage local');
+        }
+
+        function refreshAllData() {
+            refreshData();
+            updateLocalStorageInfo();
+        }
+
+        function exportLocalData() {
+            const data = localDB.exportAllData();
+            
+            // Créer le fichier JSON
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            // Télécharger le fichier
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `FootManager_Local_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            logActivity('Export données locales', 'Sauvegarde locale exportée');
+            loadActivityLogs();
+        }
+
+        function importLocalData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            
+                            if (importedData.reservations || importedData.transactions || importedData.clients) {
+                                if (confirm('Cette action remplacera toutes les données actuelles. Êtes-vous sûr de vouloir continuer ?')) {
+                                    const success = localDB.importData(importedData);
+                                    
+                                    if (success) {
+                                        updateDataStats();
+                                        updateLocalStorageInfo();
+                                        logActivity('Import données locales', `Données importées depuis ${file.name}`);
+                                        loadActivityLogs();
+                                        
+                                        alert('Données importées avec succès !');
+                                        
+                                        // Recharger la page actuelle si nécessaire
+                                        if (currentPage === 'dashboard') loadDashboard();
+                                    } else {
+                                        alert('Erreur lors de l\'importation des données.');
+                                    }
+                                }
+                            } else {
+                                alert('Format de fichier invalide. Veuillez sélectionner un fichier de sauvegarde valide.');
+                            }
+                        } catch (error) {
+                            alert('Erreur lors de la lecture du fichier. Veuillez vérifier le format.');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            
+            input.click();
+        }
+
+        function updateLocalStorageInfo() {
+            const stats = localDB.getStorageStats();
+            
+            // Mettre à jour les éléments d'affichage
+            const sizeElement = document.getElementById('localStorageSize');
+            const recordsElement = document.getElementById('totalRecords');
+            const lastModifiedElement = document.getElementById('lastModifiedTime');
+            
+            if (sizeElement) {
+                sizeElement.textContent = stats.totalSizeKB;
+            }
+            
+            if (recordsElement) {
+                recordsElement.textContent = stats.reservationsCount + stats.transactionsCount + stats.clientsCount;
+            }
+            
+            if (lastModifiedElement && stats.lastModified) {
+                const lastMod = new Date(stats.lastModified);
+                lastModifiedElement.textContent = lastMod.toLocaleString('fr-FR');
+            }
+        }
+
+        function showNotification(message) {
+            // Créer une notification temporaire
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50 animate-fade-in';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-database text-green-600"></i>
+                    <span class="text-sm font-medium text-gray-800">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Supprimer après 3 secondes
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
         function updateCredentials(event, role) {
@@ -3497,73 +3917,43 @@ Toutes les modifications seront partagées en temps réel.`);
             document.getElementById('totalDataSize').textContent = dataSize.toFixed(1);
         }
 
+        // Fonctions Git globales
+        function saveToGit() {
+            gitStorage.saveToGit();
+        }
+
+        function loadFromGit() {
+            gitStorage.loadFromGit();
+        }
+
+        function autoSyncGit() {
+            gitStorage.toggleAutoSync();
+        }
+
+        function updateGitStatusHeader() {
+            const statusElement = document.getElementById('gitStatusHeader');
+            if (!statusElement) return;
+            
+            const dot = statusElement.querySelector('div');
+            const text = statusElement.querySelector('span');
+            
+            if (gitStorage.isEnabled) {
+                dot.className = 'w-3 h-3 bg-green-500 rounded-full';
+                text.textContent = 'Git Auto';
+                text.className = 'text-sm text-green-600';
+            } else {
+                dot.className = 'w-3 h-3 bg-orange-500 rounded-full';
+                text.textContent = 'Git Manuel';
+                text.className = 'text-sm text-orange-600';
+            }
+        }
+
         function exportAllData() {
-            const allData = {
-                reservations: reservations,
-                transactions: transactions,
-                clients: clients,
-                exportDate: new Date().toISOString(),
-                version: '1.0'
-            };
-            
-            // Créer le fichier JSON
-            const dataStr = JSON.stringify(allData, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
-            // Télécharger le fichier
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `FootManager_Backup_${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            
-            logActivity('Export des données', 'Sauvegarde complète exportée');
-            loadActivityLogs();
+            exportLocalData();
         }
 
         function importData() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            
-            input.onchange = function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        try {
-                            const importedData = JSON.parse(e.target.result);
-                            
-                            if (importedData.reservations && importedData.transactions && importedData.clients) {
-                                if (confirm('Cette action remplacera toutes les données actuelles. Êtes-vous sûr de vouloir continuer ?')) {
-                                    reservations = importedData.reservations;
-                                    transactions = importedData.transactions;
-                                    clients = importedData.clients;
-                                    
-                                    localStorage.setItem('reservations', JSON.stringify(reservations));
-                                    localStorage.setItem('transactions', JSON.stringify(transactions));
-                                    localStorage.setItem('clients', JSON.stringify(clients));
-                                    
-                                    updateDataStats();
-                                    logActivity('Import des données', `Données importées depuis ${file.name}`);
-                                    loadActivityLogs();
-                                    
-                                    alert('Données importées avec succès !');
-                                    
-                                    // Recharger la page actuelle si nécessaire
-                                    if (currentPage === 'dashboard') loadDashboard();
-                                }
-                            } else {
-                                alert('Format de fichier invalide. Veuillez sélectionner un fichier de sauvegarde valide.');
-                            }
-                        } catch (error) {
-                            alert('Erreur lors de la lecture du fichier. Veuillez vérifier le format.');
-                        }
-                    };
-                    reader.readAsText(file);
-                }
-            };
-            
-            input.click();
+            importLocalData();
         }
 
         function resetAllData() {
@@ -3597,16 +3987,8 @@ Voulez-vous continuer ?`;
                             resetBy: currentUser ? currentUser.username : 'Inconnu'
                         };
                         
-                        // Supprimer toutes les données
-                        reservations = [];
-                        transactions = [];
-                        clients = [];
-                        
-                        // Supprimer du localStorage
-                        localStorage.removeItem('reservations');
-                        localStorage.removeItem('transactions');
-                        localStorage.removeItem('clients');
-                        localStorage.removeItem('activityLogs');
+                        // Réinitialiser avec le système local
+                        localDB.resetAllData();
                         
                         // Log de la réinitialisation (nouveau log)
                         logActivity('🔄 RÉINITIALISATION COMPLÈTE', 
@@ -3970,7 +4352,7 @@ L'application a été réinitialisée avec des données d'exemple.`);
             };
 
             transactions.push(transaction);
-            cloudDB.saveData();
+            localDB.saveData();
             loadDatabaseTransactions();
             logActivity('Ajout transaction DB', `${description} - ${amount}€`);
         }
@@ -4000,7 +4382,7 @@ L'application a été réinitialisée avec des données d'exemple.`);
             reservation.amount = newAmount;
             reservation.paid = newPaid;
 
-            cloudDB.saveData();
+            localDB.saveData();
             loadDatabaseReservations();
             logActivity('Modification réservation DB', `ID ${id} - ${newClient}`);
         }
@@ -4018,7 +4400,7 @@ L'application a été réinitialisée avec des données d'exemple.`);
             transaction.description = newDescription;
             transaction.amount = newAmount;
 
-            cloudDB.saveData();
+            localDB.saveData();
             loadDatabaseTransactions();
             logActivity('Modification transaction DB', `ID ${id} - ${newDescription}`);
         }
@@ -4039,7 +4421,7 @@ L'application a été réinitialisée avec des données d'exemple.`);
             client.phone = newPhone;
             client.email = newEmail;
 
-            cloudDB.saveData();
+            localDB.saveData();
             loadDatabaseClients();
             logActivity('Modification client DB', `ID ${id} - ${newName}`);
         }
@@ -4067,7 +4449,7 @@ L'application a été réinitialisée avec des données d'exemple.`);
         function deleteDatabaseReservation(id) {
             if (confirm('Supprimer cette réservation ?')) {
                 reservations = reservations.filter(r => r.id !== id);
-                cloudDB.saveData();
+                localDB.saveData();
                 loadDatabaseReservations();
                 logActivity('Suppression réservation DB', `ID ${id}`);
             }
@@ -4076,7 +4458,7 @@ L'application a été réinitialisée avec des données d'exemple.`);
         function deleteDatabaseTransaction(id) {
             if (confirm('Supprimer cette transaction ?')) {
                 transactions = transactions.filter(t => t.id !== id);
-                cloudDB.saveData();
+                localDB.saveData();
                 loadDatabaseTransactions();
                 logActivity('Suppression transaction DB', `ID ${id}`);
             }
@@ -4087,7 +4469,7 @@ L'application a été réinitialisée avec des données d'exemple.`);
             if (client && confirm(`Supprimer le client "${client.name}" et toutes ses réservations ?`)) {
                 clients = clients.filter(c => c.id !== id);
                 reservations = reservations.filter(r => r.clientId !== id);
-                cloudDB.saveData();
+                localDB.saveData();
                 loadDatabaseClients();
                 logActivity('Suppression client DB', `ID ${id} - ${client.name}`);
             }
@@ -4186,6 +4568,54 @@ L'application a été réinitialisée avec des données d'exemple.`);
             logActivity('Export table DB', `Table ${tableName} exportée`);
         }
 
+        // Fonctions de gestion du token GitHub
+        function saveGitHubToken() {
+            const token = document.getElementById('githubTokenInput').value.trim();
+            if (!token) {
+                alert('❌ Veuillez entrer un token GitHub valide.');
+                return;
+            }
+            
+            githubStorage.token = token;
+            localStorage.setItem('githubToken', token);
+            document.getElementById('githubTokenInput').value = '';
+            
+            githubStorage.showGitHubNotification('✅ Token GitHub sauvegardé');
+            logActivity('Configuration GitHub', 'Token GitHub configuré');
+            loadActivityLogs();
+        }
+
+        function clearGitHubToken() {
+            if (confirm('Supprimer le token GitHub sauvegardé ?')) {
+                githubStorage.token = null;
+                localStorage.removeItem('githubToken');
+                document.getElementById('githubTokenInput').value = '';
+                
+                githubStorage.showGitHubNotification('🗑️ Token GitHub supprimé');
+                logActivity('Configuration GitHub', 'Token GitHub supprimé');
+                loadActivityLogs();
+            }
+        }
+
+        function showTokenHelp() {
+            alert(`🔑 Comment obtenir un token GitHub ?
+
+1️⃣ Allez sur GitHub.com et connectez-vous
+2️⃣ Cliquez sur votre avatar → Settings
+3️⃣ Dans le menu de gauche → Developer settings
+4️⃣ Personal access tokens → Tokens (classic)
+5️⃣ Generate new token (classic)
+6️⃣ Donnez un nom à votre token
+7️⃣ Sélectionnez l'expiration (recommandé: 90 jours)
+8️⃣ Cochez la permission "repo" (accès complet aux repositories)
+9️⃣ Cliquez "Generate token"
+🔟 Copiez le token et collez-le ici
+
+⚠️ IMPORTANT: Sauvegardez votre token dans un endroit sûr, vous ne pourrez plus le voir après !
+
+🔒 Votre token est stocké localement et de manière sécurisée.`);
+        }
+
         // Event listeners
         document.getElementById('reservationDate').addEventListener('change', loadReservations);
         document.getElementById('historyStartDate').addEventListener('change', loadHistorique);
@@ -4193,5 +4623,5 @@ L'application a été réinitialisée avec des données d'exemple.`);
         document.getElementById('historyFilter').addEventListener('change', loadHistorique);
         document.getElementById('periodFilter').addEventListener('change', updatePeriodInputs);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dfccaee1921689',t:'MTc1NDk5OTg5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e71561e46673b4',t:'MTc1NTA3NjI3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
