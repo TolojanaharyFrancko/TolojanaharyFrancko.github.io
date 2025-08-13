@@ -686,26 +686,26 @@
                         </div>
                     </div>
                     
-                    <!-- Gestion GitHub Automatique -->
+                    <!-- Gestion GitHub Réel -->
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">
                             <i class="fab fa-github text-gray-800 mr-2"></i>
-                            Stockage GitHub Automatique
+                            Synchronisation GitHub
                         </h3>
                         
                         <div class="space-y-4">
                             <!-- Statut GitHub -->
-                            <div class="bg-green-50 rounded-lg p-3">
+                            <div class="bg-blue-50 rounded-lg p-3">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm font-medium text-gray-700">Statut GitHub:</span>
                                     <div id="githubStatus" class="flex items-center space-x-2">
-                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span class="text-sm text-green-600">Actif</span>
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                        <span class="text-sm text-blue-600">Connecté</span>
                                     </div>
                                 </div>
                                 <div class="mt-2">
                                     <span class="text-xs text-gray-500">Repository: </span>
-                                    <span class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">tolojanaharyfrancko/footmanager-data</span>
+                                    <span class="text-xs font-mono bg-gray-200 px-2 py-1 rounded">TolojanaharyFrancko/footmanager-data</span>
                                 </div>
                                 <div class="mt-1">
                                     <span class="text-xs text-gray-500">Fichier: </span>
@@ -713,12 +713,17 @@
                                 </div>
                                 <div class="mt-1">
                                     <span class="text-xs text-gray-500">Mode: </span>
-                                    <span class="text-xs font-mono bg-green-200 px-2 py-1 rounded text-green-800">Automatique (sans token)</span>
+                                    <span class="text-xs font-mono bg-blue-200 px-2 py-1 rounded text-blue-800">Authentifié avec token</span>
                                 </div>
                             </div>
                             
                             <!-- Actions GitHub -->
                             <div class="space-y-3">
+                                <button onclick="githubStorage.testGitHubConnection()" class="w-full bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
+                                    <i class="fas fa-plug mr-2"></i>
+                                    Tester la connexion
+                                </button>
+                                
                                 <button onclick="githubStorage.pushToGitHub()" class="w-full bg-gray-800 text-white py-2 rounded-lg font-medium hover:bg-gray-900 transition-colors">
                                     <i class="fab fa-github mr-2"></i>
                                     Sauvegarder sur GitHub
@@ -729,10 +734,16 @@
                                     Charger depuis GitHub
                                 </button>
                                 
-                                <button onclick="githubStorage.toggleAutoSync()" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                                    <i class="fas fa-sync-alt mr-2"></i>
-                                    <span id="githubAutoSyncText">Désactiver sync auto</span>
-                                </button>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="githubStorage.toggleAutoSync()" class="bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm">
+                                        <i class="fas fa-sync-alt mr-1"></i>
+                                        <span id="githubAutoSyncText">Auto sync</span>
+                                    </button>
+                                    <button onclick="githubStorage.resetGitHubToken()" class="bg-orange-600 text-white py-2 rounded-lg font-medium hover:bg-orange-700 transition-colors text-sm">
+                                        <i class="fas fa-key mr-1"></i>
+                                        Nouveau token
+                                    </button>
+                                </div>
                             </div>
                             
                             <!-- Statistiques GitHub -->
@@ -748,17 +759,22 @@
                             </div>
                             
                             <!-- Informations -->
-                            <div class="bg-blue-50 rounded-lg p-3">
-                                <h4 class="text-sm font-medium text-blue-800 mb-2">
+                            <div class="bg-yellow-50 rounded-lg p-3">
+                                <h4 class="text-sm font-medium text-yellow-800 mb-2">
                                     <i class="fas fa-info-circle mr-1"></i>
-                                    Fonctionnement automatique
+                                    Configuration requise
                                 </h4>
-                                <ul class="text-xs text-blue-700 space-y-1">
-                                    <li>• Repository créé automatiquement</li>
-                                    <li>• Sauvegarde automatique à chaque modification</li>
-                                    <li>• Synchronisation toutes les 5 minutes</li>
-                                    <li>• Aucun token requis</li>
+                                <ul class="text-xs text-yellow-700 space-y-1">
+                                    <li>• Token GitHub avec permissions "repo"</li>
+                                    <li>• Repository créé automatiquement si inexistant</li>
+                                    <li>• Synchronisation automatique toutes les 5 minutes</li>
+                                    <li>• Données stockées dans footmanager-data.json</li>
                                 </ul>
+                                <div class="mt-2 pt-2 border-t border-yellow-200">
+                                    <p class="text-xs text-yellow-600">
+                                        <strong>Première utilisation :</strong> Un token vous sera demandé automatiquement
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1147,10 +1163,11 @@
             syncInterval: null,
             pendingChanges: 0,
             lastSyncTime: localStorage.getItem('lastGithubSync') || null,
-            owner: 'tolojanaharyfrancko',
+            owner: 'TolojanaharyFrancko',
             repo: 'footmanager-data',
             branch: 'main',
             fileName: 'footmanager-data.json',
+            apiUrl: 'https://api.github.com',
             autoCreateRepo: true,
             
             // Initialiser le système GitHub
@@ -1163,59 +1180,207 @@
                 }
             },
             
-            // Pousser les données vers GitHub (sans token, création automatique)
+            // Obtenir le token GitHub depuis le localStorage ou demander à l'utilisateur
+            getGitHubToken() {
+                let token = localStorage.getItem('githubToken');
+                if (!token) {
+                    token = prompt(`🔐 Token GitHub requis pour synchroniser avec ${this.owner}/${this.repo}
+
+Pour créer un token :
+1. Allez sur github.com → Settings → Developer settings → Personal access tokens
+2. Créez un token avec les permissions "repo"
+3. Copiez le token ici
+
+Token GitHub :`);
+                    
+                    if (token) {
+                        localStorage.setItem('githubToken', token);
+                        this.showGitHubNotification('✅ Token GitHub configuré');
+                    }
+                }
+                return token;
+            },
+
+            // Pousser les données vers GitHub (avec authentification réelle)
             async pushToGitHub() {
                 try {
+                    const token = this.getGitHubToken();
+                    if (!token) {
+                        this.showGitHubNotification('❌ Token GitHub requis');
+                        return false;
+                    }
+
                     const data = {
                         reservations: reservations,
                         transactions: transactions,
                         clients: clients,
                         lastModified: new Date().toISOString(),
                         version: Date.now(),
-                        savedBy: currentUser ? currentUser.username : 'Système'
+                        savedBy: currentUser ? currentUser.username : 'Système',
+                        appVersion: '1.0.0'
                     };
                     
-                    // Simuler la sauvegarde GitHub avec création automatique du repository
-                    const repoData = {
-                        owner: this.owner,
-                        repo: this.repo,
-                        data: data,
-                        timestamp: new Date().toISOString()
+                    // Vérifier si le repository existe
+                    const repoExists = await this.checkRepositoryExists(token);
+                    if (!repoExists) {
+                        const created = await this.createRepository(token);
+                        if (!created) {
+                            this.showGitHubNotification('❌ Impossible de créer le repository');
+                            return false;
+                        }
+                    }
+
+                    // Obtenir le SHA du fichier existant (si il existe)
+                    let fileSha = null;
+                    try {
+                        const fileResponse = await fetch(`${this.apiUrl}/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
+                            headers: {
+                                'Authorization': `token ${token}`,
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        });
+                        
+                        if (fileResponse.ok) {
+                            const fileData = await fileResponse.json();
+                            fileSha = fileData.sha;
+                        }
+                    } catch (error) {
+                        console.log('Fichier n\'existe pas encore, création...');
+                    }
+
+                    // Encoder les données en base64
+                    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+                    
+                    // Créer ou mettre à jour le fichier
+                    const commitMessage = `🔄 Mise à jour FootManager - ${new Date().toLocaleString('fr-FR')}`;
+                    
+                    const updateData = {
+                        message: commitMessage,
+                        content: content,
+                        branch: this.branch
                     };
                     
-                    // Sauvegarder dans le localStorage avec préfixe GitHub pour simulation
-                    localStorage.setItem('github_repo_data', JSON.stringify(repoData));
-                    
-                    this.lastSyncTime = new Date().toISOString();
-                    localStorage.setItem('lastGithubSync', this.lastSyncTime);
-                    this.pendingChanges = 0;
-                    
-                    this.updateGitHubStatus();
-                    this.updateGitHubStats();
-                    
-                    this.showGitHubNotification(`✅ Données sauvegardées sur GitHub/${this.owner}/${this.repo}`);
-                    logActivity('Push GitHub', `Repository ${this.repo} mis à jour automatiquement`);
-                    
-                    return true;
+                    if (fileSha) {
+                        updateData.sha = fileSha;
+                    }
+
+                    const response = await fetch(`${this.apiUrl}/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updateData)
+                    });
+
+                    if (response.ok) {
+                        this.lastSyncTime = new Date().toISOString();
+                        localStorage.setItem('lastGithubSync', this.lastSyncTime);
+                        this.pendingChanges = 0;
+                        
+                        this.updateGitHubStatus();
+                        this.updateGitHubStats();
+                        
+                        this.showGitHubNotification(`✅ Données sauvegardées sur GitHub/${this.owner}/${this.repo}`);
+                        logActivity('Push GitHub', `Repository ${this.repo} mis à jour avec succès`);
+                        
+                        return true;
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Erreur GitHub API:', errorData);
+                        this.showGitHubNotification(`❌ Erreur GitHub: ${errorData.message}`);
+                        return false;
+                    }
                 } catch (error) {
                     console.error('Erreur push GitHub:', error);
-                    this.showGitHubNotification('❌ Erreur sauvegarde GitHub');
+                    this.showGitHubNotification('❌ Erreur de connexion GitHub');
+                    return false;
+                }
+            },
+
+            // Vérifier si le repository existe
+            async checkRepositoryExists(token) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/repos/${this.owner}/${this.repo}`, {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    return response.ok;
+                } catch (error) {
+                    return false;
+                }
+            },
+
+            // Créer le repository automatiquement
+            async createRepository(token) {
+                try {
+                    const repoData = {
+                        name: this.repo,
+                        description: 'Données FootManager Pro - Gestion de terrain de football',
+                        private: false,
+                        auto_init: true
+                    };
+
+                    const response = await fetch(`${this.apiUrl}/user/repos`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(repoData)
+                    });
+
+                    if (response.ok) {
+                        this.showGitHubNotification(`✅ Repository ${this.repo} créé automatiquement`);
+                        logActivity('Création repository', `Repository ${this.repo} créé sur GitHub`);
+                        return true;
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Erreur création repository:', errorData);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Erreur création repository:', error);
                     return false;
                 }
             },
             
-            // Récupérer les données depuis GitHub (simulation automatique)
+            // Récupérer les données depuis GitHub (authentification réelle)
             async pullFromGitHub() {
                 try {
-                    const repoData = localStorage.getItem('github_repo_data');
-                    
-                    if (!repoData) {
-                        this.showGitHubNotification('❌ Aucune sauvegarde trouvée sur GitHub');
+                    const token = this.getGitHubToken();
+                    if (!token) {
+                        this.showGitHubNotification('❌ Token GitHub requis');
                         return false;
                     }
+
+                    // Récupérer le fichier depuis GitHub
+                    const response = await fetch(`${this.apiUrl}/repos/${this.owner}/${this.repo}/contents/${this.fileName}`, {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            this.showGitHubNotification('❌ Aucune sauvegarde trouvée sur GitHub');
+                        } else {
+                            const errorData = await response.json();
+                            this.showGitHubNotification(`❌ Erreur GitHub: ${errorData.message}`);
+                        }
+                        return false;
+                    }
+
+                    const fileData = await response.json();
                     
-                    const parsedRepoData = JSON.parse(repoData);
-                    const data = parsedRepoData.data;
+                    // Décoder le contenu base64
+                    const decodedContent = decodeURIComponent(escape(atob(fileData.content)));
+                    const data = JSON.parse(decodedContent);
                     
                     // Vérifier s'il y a des données existantes
                     const hasLocalData = reservations.length > 0 || transactions.length > 0 || clients.length > 0;
@@ -1223,12 +1388,13 @@
                     if (hasLocalData) {
                         const confirmMessage = `🔄 Données GitHub détectées !
 
-📊 Repository: ${parsedRepoData.owner}/${parsedRepoData.repo}
+📊 Repository: ${this.owner}/${this.repo}
 • ${data.reservations?.length || 0} réservations
 • ${data.transactions?.length || 0} transactions  
 • ${data.clients?.length || 0} clients
 • Sauvegardé le: ${new Date(data.lastModified).toLocaleString('fr-FR')}
 • Par: ${data.savedBy}
+• Version: ${data.appVersion || 'Inconnue'}
 
 📱 Vos données actuelles :
 • ${reservations.length} réservations
@@ -1247,8 +1413,15 @@
                     transactions = data.transactions || [];
                     clients = data.clients || [];
                     
-                    this.showGitHubNotification(`✅ Données récupérées depuis ${parsedRepoData.owner}/${parsedRepoData.repo}`);
-                    logActivity('Pull GitHub', `Données chargées depuis repository ${parsedRepoData.repo}`);
+                    this.lastSyncTime = new Date().toISOString();
+                    localStorage.setItem('lastGithubSync', this.lastSyncTime);
+                    this.pendingChanges = 0;
+                    
+                    this.updateGitHubStatus();
+                    this.updateGitHubStats();
+                    
+                    this.showGitHubNotification(`✅ Données récupérées depuis ${this.owner}/${this.repo}`);
+                    logActivity('Pull GitHub', `Données chargées depuis repository ${this.repo}`);
                     
                     // Recharger l'affichage
                     if (currentPage === 'dashboard') loadDashboard();
@@ -1259,7 +1432,7 @@
                     return true;
                 } catch (error) {
                     console.error('Erreur pull GitHub:', error);
-                    this.showGitHubNotification('❌ Erreur récupération GitHub');
+                    this.showGitHubNotification('❌ Erreur de connexion GitHub');
                     return false;
                 }
             },
@@ -1351,6 +1524,40 @@
                 }
             },
             
+            // Réinitialiser le token GitHub
+            resetGitHubToken() {
+                localStorage.removeItem('githubToken');
+                this.showGitHubNotification('🔄 Token GitHub supprimé - Nouveau token requis');
+            },
+
+            // Tester la connexion GitHub
+            async testGitHubConnection() {
+                try {
+                    const token = this.getGitHubToken();
+                    if (!token) return false;
+
+                    const response = await fetch(`${this.apiUrl}/user`, {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const userData = await response.json();
+                        this.showGitHubNotification(`✅ Connecté à GitHub en tant que ${userData.login}`);
+                        return true;
+                    } else {
+                        this.showGitHubNotification('❌ Token GitHub invalide');
+                        this.resetGitHubToken();
+                        return false;
+                    }
+                } catch (error) {
+                    this.showGitHubNotification('❌ Erreur de connexion GitHub');
+                    return false;
+                }
+            },
+
             // Afficher une notification GitHub
             showGitHubNotification(message) {
                 const notification = document.createElement('div');
@@ -3201,8 +3408,6 @@
                 reservations.push(reservation);
             }
             
-            localStorage.setItem('reservations', JSON.stringify(reservations));
-            
             // Add transaction if paid
             if (document.getElementById('isPaid').checked) {
                 const transaction = {
@@ -3214,8 +3419,11 @@
                     category: 'reservation'
                 };
                 transactions.push(transaction);
-                localStorage.setItem('transactions', JSON.stringify(transactions));
             }
+            
+            // Sauvegarder automatiquement sur GitHub
+            await dataStorage.saveData();
+            githubStorage.markPendingChanges();
             
             closeModal();
             loadReservations();
@@ -4177,5 +4385,5 @@ L'application a été réinitialisée avec des données d'exemple.`);
         document.getElementById('historyFilter').addEventListener('change', loadHistorique);
         document.getElementById('periodFilter').addEventListener('change', updatePeriodInputs);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e73401058573d5',t:'MTc1NTA3NzUyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e7e2f160cba44f',t:'MTc1NTA4NDY5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
