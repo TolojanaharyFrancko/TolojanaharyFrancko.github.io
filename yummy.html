@@ -722,7 +722,7 @@
     <script>
         // Configuration Git pré-définie pour votre code
         const GIT_USERNAME = 'TolojanaharyFrancko';
-        const GIT_REPO_CODE = 'TolojanaharyFrancko.github.io';  // Pour votre code
+        const GIT_REPO_CODE = 'TolojanaharyFrancko.io';  // Pour votre code
         const GIT_REPO_DATA = 'baseYummy';   // Pour vos données
         const GIT_BRANCH = 'main';
         const DATA_FILE = 'base.json';
@@ -892,8 +892,26 @@
             } catch (error) {
                 console.error('Erreur de connexion Git:', error);
                 statusElement.className = 'text-center text-sm text-red-300';
-                statusElement.textContent = `❌ Erreur: ${error.message}`;
-                showNotification('Erreur de connexion', error.message, 'error');
+                
+                let errorMessage = error.message;
+                if (error.message.includes('401')) {
+                    errorMessage = 'Token invalide ou expiré. Vérifiez vos permissions.';
+                } else if (error.message.includes('404')) {
+                    errorMessage = 'Dépôt non trouvé. Vérifiez le nom du dépôt.';
+                }
+                
+                statusElement.innerHTML = `
+                    <div class="space-y-2">
+                        <p>❌ ${errorMessage}</p>
+                        <div class="text-xs text-yellow-300">
+                            <p>💡 Vérifications :</p>
+                            <p>• Token valide avec permissions "repo"</p>
+                            <p>• Dépôt "baseYummy" existe et accessible</p>
+                            <p>• Utilisateur "TolojanaharyFrancko" correct</p>
+                        </div>
+                    </div>
+                `;
+                showNotification('Erreur de connexion', errorMessage, 'error');
             }
         }
 
@@ -2023,5 +2041,5 @@
             showNotification('Rapport généré', `Rapport pour ${new Date(month + '-01').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`, 'success');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97215281a21173e1',t:'MTc1NTY4Njk0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9721eb51d06f7408',t:'MTc1NTY5MzIwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
