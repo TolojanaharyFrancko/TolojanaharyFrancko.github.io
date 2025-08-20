@@ -762,6 +762,16 @@
                     
                     <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">🛍️ Sélectionner des produits</h3>
+                        <div class="mb-4">
+                            <div class="relative">
+                                <input type="text" id="order-search" placeholder="🔍 Rechercher un produit..." class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-green-400 focus:border-transparent text-white placeholder-white/70" oninput="filterOrderProducts()">
+                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
                         <div id="order-products" class="space-y-3 max-h-64 overflow-y-auto mb-4"></div>
                         <div id="order-summary" class="gradient-card p-4 rounded-xl">
                             <h4 class="font-semibold text-white mb-3">📋 Résumé de la commande</h4>
@@ -2770,5 +2780,5 @@
             showNotification('Rapport généré', `Rapport pour ${new Date(month + '-01').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`, 'success');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9723315b458e740d',t:'MTc1NTcwNjU2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97233df1041693c9',t:'MTc1NTcwNzA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
