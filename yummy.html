@@ -694,12 +694,12 @@
                     <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">⚡ Ajuster le stock</h3>
                         <form id="stock-form" class="space-y-4">
-                            <select id="stock-product" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-orange-400 focus:border-transparent text-white" required>
+                            <select id="stock-product" class="w-full p-3 bg-blue-600 border border-blue-500 rounded-xl input-focus focus:ring-2 focus:ring-orange-400 focus:border-transparent text-white" required>
                                 <option value="">📦 Sélectionner un produit</option>
                             </select>
                             <div class="flex gap-3">
                                 <input type="number" id="stock-quantity" placeholder="🔢 Quantité" class="flex-1 p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-orange-400 focus:border-transparent text-white placeholder-white/70" required>
-                                <select id="stock-type" class="p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-orange-400 focus:border-transparent text-white">
+                                <select id="stock-type" class="p-3 bg-blue-600 border border-blue-500 rounded-xl input-focus focus:ring-2 focus:ring-orange-400 focus:border-transparent text-white">
                                     <option value="add">➕ Ajouter</option>
                                     <option value="remove">➖ Retirer</option>
                                     <option value="set">🎯 Définir</option>
@@ -823,7 +823,7 @@
                         <form id="expense-form" class="space-y-4">
                             <input type="text" id="expense-description" placeholder="📝 Description de la dépense" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-red-400 focus:border-transparent text-white placeholder-white/70" required>
                             <input type="number" id="expense-amount" placeholder="💰 Montant (Ar)" step="0.01" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-red-400 focus:border-transparent text-white placeholder-white/70" required>
-                            <select id="expense-category" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-red-400 focus:border-transparent text-white" required>
+                            <select id="expense-category" class="w-full p-3 bg-blue-600 border border-blue-500 rounded-xl input-focus focus:ring-2 focus:ring-red-400 focus:border-transparent text-white" required>
                                 <option value="">🏷️ Catégorie</option>
                                 <option value="ingredients">🥛 Ingrédients</option>
                                 <option value="equipment">🔧 Équipement</option>
@@ -865,10 +865,10 @@
                 <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-4">📋 Liste des dépenses</h3>
                     <div class="flex gap-3 mb-4">
-                        <select id="expense-filter-month" class="p-3 bg-white/20 border border-white/30 rounded-xl text-white">
+                        <select id="expense-filter-month" class="p-3 bg-blue-600 border border-blue-500 rounded-xl text-white">
                             <option value="">📅 Tous les mois</option>
                         </select>
-                        <select id="expense-filter-category" class="p-3 bg-white/20 border border-white/30 rounded-xl text-white">
+                        <select id="expense-filter-category" class="p-3 bg-blue-600 border border-blue-500 rounded-xl text-white">
                             <option value="">🏷️ Toutes catégories</option>
                             <option value="ingredients">🥛 Ingrédients</option>
                             <option value="equipment">🔧 Équipement</option>
@@ -896,7 +896,7 @@
                     <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">📅 Période d'analyse</h3>
                         <div class="flex gap-3">
-                            <input type="month" id="report-month" class="flex-1 p-3 bg-white/20 border border-white/30 rounded-xl text-white">
+                            <input type="month" id="report-month" class="flex-1 p-3 bg-blue-600 border border-blue-500 rounded-xl text-white">
                             <button onclick="generateReport()" class="bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 hover:to-gray-900 text-white px-6 py-3 rounded-xl button-3d">
                                 📊 Générer
                             </button>
@@ -2166,10 +2166,13 @@
                         <p class="text-green-300 font-bold text-xl">💰 Total: ${order.total.toFixed(2)} Ar</p>
                     </div>
                     <div class="flex gap-3">
-                        <button onclick="viewInvoice(${order.id})" class="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white px-6 py-3 rounded-xl button-3d">
+                        <button onclick="viewInvoice(${order.id})" class="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white px-4 py-2 rounded-xl button-3d text-sm">
                             👁️ Voir
                         </button>
-                        <button onclick="deleteOrder(${order.id})" class="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl button-3d">
+                        <button onclick="exportInvoiceAsImage(${order.id})" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-xl button-3d text-sm">
+                            📸 Export
+                        </button>
+                        <button onclick="deleteOrder(${order.id})" class="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-4 py-2 rounded-xl button-3d text-sm">
                             🗑️ Supprimer
                         </button>
                     </div>
@@ -2285,6 +2288,117 @@
 
         function printInvoice() {
             window.print();
+        }
+
+        // Fonction d'export en image
+        async function exportInvoiceAsImage(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            showNotification('Export en cours...', 'Génération de l\'image de la facture', 'info');
+            
+            // Créer un canvas temporaire avec la facture
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 1000;
+            
+            // Fond blanc
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Styles de texte
+            ctx.fillStyle = '#1f2937';
+            ctx.textAlign = 'center';
+            
+            // En-tête
+            ctx.font = 'bold 32px Arial';
+            ctx.fillText('🍦 YUMMY ICE CREAM', canvas.width/2, 60);
+            
+            ctx.font = '20px Arial';
+            ctx.fillText(`FACTURE #${order.id}`, canvas.width/2, 100);
+            ctx.fillText(`Date: ${order.date}`, canvas.width/2, 130);
+            
+            // Informations client
+            ctx.textAlign = 'left';
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText('👤 INFORMATIONS CLIENT', 50, 180);
+            
+            ctx.font = '16px Arial';
+            ctx.fillText(`Nom: ${order.client.name}`, 50, 210);
+            if (order.client.phone) {
+                ctx.fillText(`📞 Téléphone: ${order.client.phone}`, 50, 235);
+            }
+            if (order.client.deliveryLocation) {
+                ctx.fillText(`📍 Livraison: ${order.client.deliveryLocation}`, 50, 260);
+            }
+            
+            // Tableau des produits
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText('🛍️ DÉTAIL DE LA COMMANDE', 50, 320);
+            
+            // En-têtes du tableau
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(50, 340, 700, 30);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('Produit', 60, 360);
+            ctx.fillText('Qté', 300, 360);
+            ctx.fillText('Prix unit.', 400, 360);
+            ctx.fillText('Total', 600, 360);
+            
+            // Lignes du tableau
+            ctx.fillStyle = '#1f2937';
+            ctx.font = '14px Arial';
+            let yPos = 390;
+            
+            order.items.forEach((item, index) => {
+                if (index % 2 === 0) {
+                    ctx.fillStyle = '#f9fafb';
+                    ctx.fillRect(50, yPos - 20, 700, 25);
+                }
+                
+                ctx.fillStyle = '#1f2937';
+                ctx.fillText(item.name, 60, yPos);
+                ctx.fillText(item.quantity.toString(), 300, yPos);
+                ctx.fillText(`${item.price.toFixed(2)} Ar`, 400, yPos);
+                ctx.fillText(`${(item.price * item.quantity).toFixed(2)} Ar`, 600, yPos);
+                yPos += 30;
+            });
+            
+            // Totaux
+            yPos += 20;
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`Sous-total: ${order.subtotal.toFixed(2)} Ar`, 500, yPos);
+            yPos += 25;
+            ctx.fillText(`🚚 Frais de livraison: ${order.deliveryFee.toFixed(2)} Ar`, 500, yPos);
+            yPos += 25;
+            
+            // Total final
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText(`💰 TOTAL: ${order.total.toFixed(2)} Ar`, 500, yPos + 10);
+            
+            // Pied de page
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🙏 Merci pour votre commande !', canvas.width/2, yPos + 80);
+            ctx.fillText('Nous espérons vous revoir bientôt chez Yummy Ice Cream', canvas.width/2, yPos + 105);
+            
+            // Télécharger l'image
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Facture_${order.id}_${order.client.name.replace(/\s+/g, '_')}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('Export réussi !', `Facture #${order.id} exportée en image`, 'success');
+            }, 'image/png');
         }
 
         // Tableau de bord et rapports améliorés
@@ -2503,5 +2617,5 @@
             showNotification('Rapport généré', `Rapport pour ${new Date(month + '-01').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`, 'success');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'972224c146617400',t:'MTc1NTY5NTU2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'972314bbb1877415',t:'MTc1NTcwNTM4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
