@@ -12,279 +12,430 @@
             font-family: 'Inter', sans-serif;
         }
         
+        body {
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
         }
         .print-only { display: none; }
         
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            z-index: 30;
+            transition: transform 0.3s ease;
         }
         
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .sidebar.hidden {
+            transform: translateX(-100%);
         }
         
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .main-content.full-width {
+            margin-left: 0;
         }
         
         .nav-item {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .nav-item:hover::before {
-            left: 100%;
-        }
-        
-        .chart-bar {
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .low-stock {
-            animation: pulse-glow 2s infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
-        }
-        
-        .sync-status {
-            transition: all 0.3s ease;
-        }
-        
-        .sync-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-        }
-        
-        .sync-error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-        
-        .floating-action {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 40;
-        }
-        
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .gradient-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .input-focus {
-            transition: all 0.3s ease;
-        }
-        
-        .input-focus:focus {
-            transform: scale(1.02);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        .button-3d {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            margin: 4px 12px;
+            border-radius: 12px;
+            color: #64748b;
+            text-decoration: none;
             transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: #334155;
+        }
+        
+        .nav-item.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .nav-item .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .card:hover {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
-        .button-3d:hover {
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
         }
         
-        .button-3d:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
         
-        .modal-backdrop {
-            backdrop-filter: blur(8px);
-            background: rgba(0, 0, 0, 0.4);
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
         }
         
-        .progress-bar {
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
-            background-size: 200% 100%;
-            animation: gradient-shift 2s ease infinite;
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
         
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 40;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .notification {
             position: fixed;
-            top: 1rem;
-            right: 1rem;
+            top: 20px;
+            right: 20px;
             z-index: 50;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             transform: translateX(100%);
             transition: transform 0.3s ease;
+            max-width: 400px;
         }
         
         .notification.show {
             transform: translateX(0);
         }
+        
+        .notification.success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .notification.warning {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .section-header .icon {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+        }
+        
+        .low-stock {
+            border-left: 4px solid #ef4444;
+            background: #fef2f2;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 25;
+            display: none;
+        }
+        
+        .overlay.show {
+            display: block;
+        }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body>
     <!-- Notification Toast -->
     <div id="notification" class="notification">
-        <div class="bg-white rounded-lg shadow-xl p-4 max-w-sm">
+        <div class="flex items-center">
+            <div id="notification-icon" class="mr-3 text-xl"></div>
+            <div>
+                <p id="notification-title" class="font-semibold text-gray-800"></p>
+                <p id="notification-message" class="text-sm text-gray-600"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="p-6 border-b border-gray-200">
             <div class="flex items-center">
-                <div id="notification-icon" class="mr-3"></div>
+                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                    <span class="text-white text-lg">🍦</span>
+                </div>
                 <div>
-                    <p id="notification-title" class="font-semibold text-gray-800"></p>
-                    <p id="notification-message" class="text-sm text-gray-600"></p>
+                    <h1 class="text-lg font-bold text-gray-800">Yummy Ice Cream</h1>
+                    <p class="text-sm text-gray-500">Gestion moderne</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal de connexion Git -->
-    <div id="git-login-modal" class="fixed inset-0 modal-backdrop flex items-center justify-center z-50">
-        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl slide-in">
-            <div class="text-center mb-6">
-                <div class="flex justify-center mb-4">
-                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Connexion Git</h2>
-                <p class="text-gray-600">Synchronisez vos données avec GitHub</p>
+        <nav class="p-4">
+            <div class="nav-item active" onclick="showSection('dashboard')" data-section="dashboard">
+                <div class="icon">📊</div>
+                <span>Tableau de bord</span>
             </div>
-            
-            <div class="gradient-card p-4 rounded-xl mb-4">
-                <h3 class="font-semibold text-gray-800 mb-2">📋 Configuration automatique</h3>
-                <div class="space-y-1 text-sm text-gray-700">
-                    <p><span class="font-medium">👤 Utilisateur:</span> <span class="text-blue-600">TolojanaharyFrancko</span></p>
-                    <p><span class="font-medium">📦 Dépôt données:</span> <span class="text-blue-600">baseYummy</span></p>
-                    <p><span class="font-medium">🌿 Branche:</span> <span class="text-blue-600">main</span></p>
-                </div>
+            <div class="nav-item" onclick="showSection('products')" data-section="products">
+                <div class="icon">📦</div>
+                <span>Produits</span>
             </div>
-            
-            <form id="git-login-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">🔑 Token d'accès GitHub</label>
-                    <input type="password" id="login-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full p-3 border border-gray-300 rounded-xl input-focus focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                    <p class="text-xs text-gray-500 mt-1">💡 GitHub → Settings → Developer settings → Personal access tokens</p>
-                </div>
-                
-                <div class="flex gap-3">
-                    <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-xl button-3d font-medium">
-                        🚀 Se connecter
-                    </button>
-                    <button type="button" onclick="skipGitLogin()" class="px-6 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl button-3d">
-                        ⏭️
-                    </button>
-                </div>
-                
-                <div id="login-status" class="text-center text-sm hidden"></div>
-            </form>
-        </div>
-    </div>
-
-    <div class="container mx-auto px-4 py-6">
-        <!-- En-tête moderne -->
-        <header class="glass-effect rounded-2xl p-6 mb-6 fade-in">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="text-center md:text-left mb-4 md:mb-0">
-                    <div class="flex items-center justify-center md:justify-start mb-2">
-                        <div class="w-12 h-12 bg-gradient-to-br from-pink-500 to-orange-500 rounded-xl flex items-center justify-center mr-3">
-                            <span class="text-2xl">🍦</span>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold text-white">Yummy Ice Cream</h1>
-                            <p class="text-blue-100">Système de gestion moderne</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div id="sync-status" class="px-4 py-2 rounded-full text-sm sync-status glass-effect text-white">
-                        <span id="sync-text">⚙️ Configuration</span>
-                    </div>
-                    <button onclick="syncToGit()" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-xl button-3d text-sm font-medium">
-                        🔄 Sync
-                    </button>
-                </div>
+            <div class="nav-item" onclick="showSection('stock')" data-section="stock">
+                <div class="icon">📋</div>
+                <span>Stock</span>
             </div>
-        </header>
-
-        <!-- Navigation fluide -->
-        <nav class="glass-effect rounded-2xl p-4 mb-6 no-print fade-in">
-            <div class="flex flex-wrap gap-2 justify-center">
-                <button onclick="showSection('dashboard')" class="nav-item bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl button-3d text-sm font-medium">
-                    📊 Tableau de bord
-                </button>
-                <button onclick="showSection('products')" class="nav-item bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white px-6 py-3 rounded-xl button-3d text-sm font-medium">
-                    📦 Produits
-                </button>
-                <button onclick="showSection('stock')" class="nav-item bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-6 py-3 rounded-xl button-3d text-sm font-medium">
-                    📋 Stock
-                </button>
-                <button onclick="showSection('orders')" class="nav-item bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl button-3d text-sm font-medium">
-                    🛒 Commandes
-                </button>
-                <button onclick="showSection('invoices')" class="nav-item bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl button-3d text-sm font-medium">
-                    📄 Factures
-                </button>
-                <button onclick="showSection('expenses')" class="nav-item bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl button-3d text-sm font-medium">
-                    💰 Dépenses
-                </button>
-                <button onclick="showSection('reports')" class="nav-item bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 hover:to-gray-900 text-white px-6 py-3 rounded-xl button-3d text-sm font-medium">
-                    📈 Rapports
-                </button>
-                <button onclick="showSection('git-config')" class="nav-item bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl button-3d text-sm font-medium">
-                    ⚙️ Git Config
-                </button>
+            <div class="nav-item" onclick="showSection('orders')" data-section="orders">
+                <div class="icon">🛒</div>
+                <span>Commandes</span>
+            </div>
+            <div class="nav-item" onclick="showSection('invoices')" data-section="invoices">
+                <div class="icon">📄</div>
+                <span>Factures</span>
+            </div>
+            <div class="nav-item" onclick="showSection('expenses')" data-section="expenses">
+                <div class="icon">💰</div>
+                <span>Dépenses</span>
+            </div>
+            <div class="nav-item" onclick="showSection('reports')" data-section="reports">
+                <div class="icon">📈</div>
+                <span>Rapports</span>
+            </div>
+            <div class="nav-item" onclick="showSection('git-config')" data-section="git-config">
+                <div class="icon">⚙️</div>
+                <span>Configuration</span>
             </div>
         </nav>
+
+        <div class="absolute bottom-4 left-4 right-4">
+            <div class="bg-gray-50 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Synchronisation</span>
+                    <div id="sync-status-indicator" class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                </div>
+                <button onclick="syncToGit()" class="w-full btn-primary text-sm py-2">
+                    🔄 Synchroniser
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="main-content">
+        <div class="p-6">
+            <!-- Modal de connexion Git -->
+            <div id="git-login-modal" class="fixed inset-0 modal-backdrop flex items-center justify-center z-50">
+                <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+                    <div class="text-center mb-6">
+                        <div class="flex justify-center mb-4">
+                            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Connexion Git</h2>
+                        <p class="text-gray-600">Synchronisez vos données avec GitHub</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-xl mb-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">📋 Configuration automatique</h3>
+                        <div class="space-y-1 text-sm text-gray-700">
+                            <p><span class="font-medium">👤 Utilisateur:</span> <span class="text-blue-600">TolojanaharyFrancko</span></p>
+                            <p><span class="font-medium">📦 Dépôt données:</span> <span class="text-blue-600">baseYummy</span></p>
+                            <p><span class="font-medium">🌿 Branche:</span> <span class="text-blue-600">main</span></p>
+                        </div>
+                    </div>
+                    
+                    <form id="git-login-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">🔑 Token d'accès GitHub</label>
+                            <input type="password" id="login-token" placeholder="ghp_xxxxxxxxxxxx" class="input-field" required>
+                            <p class="text-xs text-gray-500 mt-1">💡 GitHub → Settings → Developer settings → Personal access tokens</p>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 btn-primary">
+                                🚀 Se connecter
+                            </button>
+                            <button type="button" onclick="skipGitLogin()" class="btn-secondary">
+                                ⏭️
+                            </button>
+                        </div>
+                        
+                        <div id="login-status" class="text-center text-sm hidden"></div>
+                    </form>
+                </div>
+            </div>
 
         <!-- Section Configuration Git -->
         <div id="git-config-section" class="section hidden">
@@ -368,113 +519,116 @@
             </div>
         </div>
 
-        <!-- Section Tableau de bord -->
-        <div id="dashboard-section" class="section">
-            <!-- Cartes de statistiques -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="glass-effect rounded-2xl p-6 card-hover fade-in">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Ventes du mois</p>
-                            <p class="text-3xl font-bold text-white" id="monthly-sales">0 Ar</p>
-                            <p class="text-green-300 text-xs mt-1">📈 +12% ce mois</p>
-                        </div>
-                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
-                            <span class="text-2xl">💰</span>
-                        </div>
-                    </div>
+            <!-- Section Tableau de bord -->
+            <div id="dashboard-section" class="section">
+                <div class="section-header">
+                    <div class="icon">📊</div>
+                    <h1 class="text-2xl font-bold text-gray-800">Tableau de bord</h1>
                 </div>
-                
-                <div class="glass-effect rounded-2xl p-6 card-hover fade-in">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Commandes</p>
-                            <p class="text-3xl font-bold text-white" id="total-orders">0</p>
-                            <p class="text-blue-300 text-xs mt-1">📦 Total</p>
-                        </div>
-                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-xl flex items-center justify-center">
-                            <span class="text-2xl">🛒</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="glass-effect rounded-2xl p-6 card-hover fade-in">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Produits</p>
-                            <p class="text-3xl font-bold text-white" id="total-products">0</p>
-                            <p class="text-purple-300 text-xs mt-1">📦 En catalogue</p>
-                        </div>
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-600 rounded-xl flex items-center justify-center">
-                            <span class="text-2xl">📦</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="glass-effect rounded-2xl p-6 card-hover fade-in">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Stock faible</p>
-                            <p class="text-3xl font-bold text-white" id="low-stock-count">0</p>
-                            <p class="text-red-300 text-xs mt-1">⚠️ Attention</p>
-                        </div>
-                        <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-orange-600 rounded-xl flex items-center justify-center">
-                            <span class="text-2xl">⚠️</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Graphiques modernes -->
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="glass-effect rounded-2xl p-6 card-hover fade-in">
-                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center">
-                        <span class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-3 text-sm">📊</span>
-                        Ventes par mois
-                    </h3>
-                    <div id="sales-chart" class="h-64"></div>
-                </div>
-                
-                <div class="glass-effect rounded-2xl p-6 card-hover fade-in">
-                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center">
-                        <span class="w-6 h-6 bg-purple-500 rounded-lg flex items-center justify-center mr-3 text-sm">🏆</span>
-                        Top produits
-                    </h3>
-                    <div id="products-chart" class="h-64"></div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Section Produits -->
-        <div id="products-section" class="section hidden">
-            <div class="glass-effect rounded-2xl p-6 mb-6 fade-in">
-                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                    <span class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">📦</span>
-                    Gestion des Produits
-                </h2>
+                <!-- Cartes de statistiques -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm font-medium">Ventes du mois</p>
+                                <p class="text-3xl font-bold text-gray-800" id="monthly-sales">0 Ar</p>
+                                <p class="text-green-600 text-xs mt-1">📈 +12% ce mois</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl">💰</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm font-medium">Commandes</p>
+                                <p class="text-3xl font-bold text-gray-800" id="total-orders">0</p>
+                                <p class="text-blue-600 text-xs mt-1">📦 Total</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl">🛒</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm font-medium">Produits</p>
+                                <p class="text-3xl font-bold text-gray-800" id="total-products">0</p>
+                                <p class="text-purple-600 text-xs mt-1">📦 En catalogue</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl">📦</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm font-medium">Stock faible</p>
+                                <p class="text-3xl font-bold text-gray-800" id="low-stock-count">0</p>
+                                <p class="text-red-600 text-xs mt-1">⚠️ Attention</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl">⚠️</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Graphiques -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="chart-container">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center">
+                            <span class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-3 text-sm text-white">📊</span>
+                            Ventes par mois
+                        </h3>
+                        <div id="sales-chart" class="h-64"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center">
+                            <span class="w-6 h-6 bg-purple-500 rounded-lg flex items-center justify-center mr-3 text-sm text-white">🏆</span>
+                            Top produits
+                        </h3>
+                        <div id="products-chart" class="h-64"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Produits -->
+            <div id="products-section" class="section hidden">
+                <div class="section-header">
+                    <div class="icon">📦</div>
+                    <h1 class="text-2xl font-bold text-gray-800">Gestion des Produits</h1>
+                </div>
                 
                 <div class="grid md:grid-cols-2 gap-6">
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-4">➕ Ajouter un produit</h3>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">➕ Ajouter un produit</h3>
                         <form id="product-form" class="space-y-4">
-                            <input type="text" id="product-name" placeholder="🏷️ Nom du produit" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/70" required>
-                            <input type="number" id="product-price" placeholder="💰 Prix (Ar)" step="0.01" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/70" required>
-                            <input type="number" id="product-stock" placeholder="📦 Stock initial" min="0" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/70" required>
-                            <input type="number" id="product-min-stock" placeholder="⚠️ Stock minimum" min="0" value="5" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/70">
-                            <textarea id="product-description" placeholder="📝 Description" class="w-full p-3 bg-white/20 border border-white/30 rounded-xl input-focus focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/70" rows="3"></textarea>
-                            <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white py-3 rounded-xl button-3d font-medium">
+                            <input type="text" id="product-name" placeholder="🏷️ Nom du produit" class="input-field" required>
+                            <input type="number" id="product-price" placeholder="💰 Prix (Ar)" step="0.01" class="input-field" required>
+                            <input type="number" id="product-stock" placeholder="📦 Stock initial" min="0" class="input-field" required>
+                            <input type="number" id="product-min-stock" placeholder="⚠️ Stock minimum" min="0" value="5" class="input-field">
+                            <textarea id="product-description" placeholder="📝 Description" class="input-field" rows="3"></textarea>
+                            <button type="submit" class="w-full btn-primary">
                                 ✨ Ajouter le produit
                             </button>
                         </form>
                     </div>
                     
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-4">📋 Liste des produits</h3>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Liste des produits</h3>
                         <div id="products-list" class="space-y-3 max-h-96 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
-        </div>
 
         <!-- Section Stock -->
         <div id="stock-section" class="section hidden">
@@ -709,14 +863,8 @@
                     </button>
                 </div>
             </div>
+            </div>
         </div>
-    </div>
-
-    <!-- Bouton d'action flottant -->
-    <div class="floating-action">
-        <button onclick="syncToGit()" class="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full shadow-lg button-3d flex items-center justify-center text-xl">
-            🔄
-        </button>
     </div>
 
     <script>
@@ -751,11 +899,13 @@
                 info: 'ℹ️'
             };
             
+            // Reset classes
+            notification.className = 'notification';
+            notification.classList.add(type, 'show');
+            
             icon.textContent = icons[type] || icons.info;
             titleEl.textContent = title;
             messageEl.textContent = message;
-            
-            notification.classList.add('show');
             
             setTimeout(() => {
                 notification.classList.remove('show');
@@ -802,7 +952,7 @@
             // Auto-sync checkbox
             document.getElementById('auto-sync').checked = autoSyncEnabled;
             
-            showNotification('Bienvenue !', 'Application initialisée avec succès', 'success');
+            showNotification('Bienvenue !', 'Application prête - Sauvegarde automatique activée', 'success');
         }
 
         function showGitLoginModal() {
@@ -920,8 +1070,30 @@
             initializeApp();
         }
 
+        // Navigation functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        }
+
         // Gestion des sections avec animation
         function showSection(section) {
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+            
+            // Update sections
             document.querySelectorAll('.section').forEach(s => {
                 s.classList.add('hidden');
                 s.classList.remove('fade-in');
@@ -929,6 +1101,11 @@
             const targetSection = document.getElementById(section + '-section');
             targetSection.classList.remove('hidden');
             setTimeout(() => targetSection.classList.add('fade-in'), 10);
+            
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
         }
 
         // Configuration Git
@@ -984,26 +1161,25 @@
             showNotification('Auto-sync', `Synchronisation automatique ${autoSyncEnabled ? 'activée' : 'désactivée'}`, 'info');
         }
 
-        // Fonctions Git améliorées
+        // Fonctions Git améliorées avec indicateur de sauvegarde
         async function syncToGit() {
             if (!gitConfig.token) {
                 showNotification('Configuration requise', 'Veuillez saisir votre token GitHub', 'warning');
                 return;
             }
 
-            const statusElement = document.getElementById('sync-status');
-            const textElement = document.getElementById('sync-text');
+            // Indicateur de sauvegarde dans la sidebar
+            const syncIndicator = document.getElementById('sync-status-indicator');
+            syncIndicator.className = 'w-3 h-3 bg-yellow-400 rounded-full animate-pulse';
             
             try {
-                statusElement.className = 'px-4 py-2 rounded-full text-sm sync-status glass-effect text-yellow-300';
-                textElement.textContent = '🔄 Synchronisation...';
-
                 const data = {
                     products: products,
                     orders: orders,
                     expenses: expenses,
                     stockMovements: stockMovements,
-                    lastSync: new Date().toISOString()
+                    lastSync: new Date().toISOString(),
+                    totalRecords: products.length + orders.length + expenses.length + stockMovements.length
                 };
 
                 const response = await fetch(`https://api.github.com/repos/${GIT_USERNAME}/${GIT_REPO_DATA}/contents/${DATA_FILE}`, {
@@ -1036,27 +1212,28 @@
                 });
 
                 if (updateResponse.ok) {
-                    statusElement.className = 'px-4 py-2 rounded-full text-sm sync-status sync-success';
-                    textElement.textContent = '✅ Synchronisé';
-                    addSyncLog('Synchronisation réussie', 'success');
-                    showNotification('Synchronisation', 'Données synchronisées avec succès !', 'success');
+                    // Indicateur de succès
+                    syncIndicator.className = 'w-3 h-3 bg-green-500 rounded-full';
+                    addSyncLog(`✅ ${data.totalRecords} enregistrements sauvegardés`, 'success');
                     
+                    // Retour à l'état normal après 2 secondes
                     setTimeout(() => {
-                        updateSyncStatus();
-                    }, 3000);
+                        syncIndicator.className = 'w-3 h-3 bg-gray-400 rounded-full';
+                    }, 2000);
                 } else {
                     throw new Error(`Erreur HTTP: ${updateResponse.status}`);
                 }
 
             } catch (error) {
                 console.error('Erreur de synchronisation:', error);
-                statusElement.className = 'px-4 py-2 rounded-full text-sm sync-status sync-error';
-                textElement.textContent = '❌ Erreur';
-                addSyncLog(`Erreur: ${error.message}`, 'error');
-                showNotification('Erreur de synchronisation', error.message, 'error');
+                // Indicateur d'erreur
+                syncIndicator.className = 'w-3 h-3 bg-red-500 rounded-full animate-pulse';
+                addSyncLog(`❌ Erreur: ${error.message}`, 'error');
+                showNotification('Erreur de sauvegarde', error.message, 'error');
                 
+                // Retour à l'état normal après 5 secondes
                 setTimeout(() => {
-                    updateSyncStatus();
+                    syncIndicator.className = 'w-3 h-3 bg-gray-400 rounded-full';
                 }, 5000);
             }
         }
@@ -1175,10 +1352,20 @@
             });
         }
 
-        // Auto-sync après modifications
+        // Auto-sync après modifications - OBLIGATOIRE
         function autoSync() {
-            if (autoSyncEnabled && gitConfig.token) {
-                setTimeout(() => syncToGit(), 1000);
+            // Toujours sauvegarder, même si auto-sync est désactivé
+            if (gitConfig.token) {
+                setTimeout(() => syncToGit(), 500);
+            } else {
+                showNotification('Sauvegarde locale', 'Données sauvegardées localement. Configurez Git pour la synchronisation.', 'info');
+            }
+        }
+
+        // Sauvegarde immédiate et obligatoire
+        function forceSave() {
+            if (gitConfig.token) {
+                syncToGit();
             }
         }
 
@@ -1217,29 +1404,36 @@
             displayStockStatus();
             populateStockSelect();
             updateDashboard();
-            autoSync();
             
-            showNotification('Produit ajouté', `${product.name} a été ajouté avec succès !`, 'success');
+            // Sauvegarde immédiate obligatoire
+            forceSave();
+            
+            showNotification('Produit ajouté', `${product.name} ajouté et sauvegardé !`, 'success');
         }
 
         function displayProducts() {
             const container = document.getElementById('products-list');
             container.innerHTML = '';
             
+            if (products.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Aucun produit ajouté</p>';
+                return;
+            }
+            
             products.forEach(product => {
                 const div = document.createElement('div');
                 const isLowStock = product.stock <= product.minStock;
-                div.className = `gradient-card p-4 rounded-xl flex justify-between items-center card-hover ${isLowStock ? 'border-l-4 border-red-400 low-stock' : ''}`;
+                div.className = `card p-4 flex justify-between items-center ${isLowStock ? 'low-stock' : ''}`;
                 div.innerHTML = `
                     <div>
-                        <h4 class="font-semibold text-white">${product.name}</h4>
-                        <p class="text-sm text-white/70">${product.description}</p>
-                        <p class="text-green-300 font-bold">${product.price.toFixed(2)} Ar</p>
-                        <p class="text-sm ${isLowStock ? 'text-red-300 font-bold' : 'text-white/70'}">
+                        <h4 class="font-semibold text-gray-800">${product.name}</h4>
+                        <p class="text-sm text-gray-600">${product.description}</p>
+                        <p class="text-blue-600 font-bold">${product.price.toFixed(2)} Ar</p>
+                        <p class="text-sm ${isLowStock ? 'text-red-600 font-bold' : 'text-gray-500'}">
                             📦 Stock: ${product.stock} ${isLowStock ? '⚠️' : ''}
                         </p>
                     </div>
-                    <button onclick="deleteProduct(${product.id})" class="bg-red-500/80 hover:bg-red-600 text-white px-4 py-2 rounded-xl button-3d text-sm">
+                    <button onclick="deleteProduct(${product.id})" class="btn-danger">
                         🗑️ Supprimer
                     </button>
                 `;
@@ -1257,8 +1451,11 @@
                 displayStockStatus();
                 populateStockSelect();
                 updateDashboard();
-                autoSync();
-                showNotification('Produit supprimé', `${product.name} a été supprimé`, 'info');
+                
+                // Sauvegarde immédiate obligatoire
+                forceSave();
+                
+                showNotification('Produit supprimé', `${product.name} supprimé et sauvegardé !`, 'info');
             }
         }
 
@@ -1308,10 +1505,12 @@
             displayStockStatus();
             displayStockHistory();
             updateDashboard();
-            autoSync();
+            
+            // Sauvegarde immédiate obligatoire
+            forceSave();
             
             const typeText = { 'add': 'Ajout', 'remove': 'Retrait', 'set': 'Définition' }[type];
-            showNotification('Stock ajusté', `${typeText} de ${quantity} pour ${product.name}`, 'success');
+            showNotification('Stock ajusté', `${typeText} de ${quantity} pour ${product.name} - Sauvegardé !`, 'success');
         }
 
         function displayStockStatus() {
@@ -1400,9 +1599,11 @@
             displayExpenses();
             updateExpenseSummary();
             updateDashboard();
-            autoSync();
             
-            showNotification('Dépense ajoutée', `${expense.description} - ${expense.amount} Ar`, 'success');
+            // Sauvegarde immédiate obligatoire
+            forceSave();
+            
+            showNotification('Dépense ajoutée', `${expense.description} - ${expense.amount} Ar - Sauvegardé !`, 'success');
         }
 
         function displayExpenses() {
@@ -1464,8 +1665,11 @@
                 displayExpenses();
                 updateExpenseSummary();
                 updateDashboard();
-                autoSync();
-                showNotification('Dépense supprimée', expense.description, 'info');
+                
+                // Sauvegarde immédiate obligatoire
+                forceSave();
+                
+                showNotification('Dépense supprimée', `${expense.description} - Sauvegardé !`, 'info');
             }
         }
 
@@ -1687,9 +1891,11 @@
             displayStockStatus();
             displayStockHistory();
             updateDashboard();
-            autoSync();
             
-            showNotification('Commande créée', `Commande #${order.id} pour ${clientName}`, 'success');
+            // Sauvegarde immédiate obligatoire
+            forceSave();
+            
+            showNotification('Commande créée', `Commande #${order.id} pour ${clientName} - Sauvegardé !`, 'success');
         }
 
         function displayInvoices() {
@@ -1726,8 +1932,11 @@
                 localStorage.setItem('orders', JSON.stringify(orders));
                 displayInvoices();
                 updateDashboard();
-                autoSync();
-                showNotification('Facture supprimée', `Facture #${id}`, 'info');
+                
+                // Sauvegarde immédiate obligatoire
+                forceSave();
+                
+                showNotification('Facture supprimée', `Facture #${id} - Sauvegardé !`, 'info');
             }
         }
 
@@ -2041,5 +2250,5 @@
             showNotification('Rapport généré', `Rapport pour ${new Date(month + '-01').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`, 'success');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9721eb51d06f7408',t:'MTc1NTY5MzIwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'972204d770c87408',t:'MTc1NTY5NDI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
