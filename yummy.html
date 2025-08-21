@@ -13,9 +13,9 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #C47D4E 0%, #E6A45B 50%, #F8C33B 100%);
             min-height: 100vh;
-            color: #1e293b;
+            color: #5A1F1F;
         }
         
         @media print {
@@ -107,8 +107,8 @@
         }
         
         .btn-primary {
-            background: #3b82f6;
-            color: white;
+            background: linear-gradient(135deg, #802B2B 0%, #5A1F1F 100%);
+            color: #FDF7F3;
             border: none;
             padding: 12px 24px;
             border-radius: 12px;
@@ -118,7 +118,7 @@
         }
         
         .btn-primary:hover {
-            background: #2563eb;
+            background: linear-gradient(135deg, #5A1F1F 0%, #802B2B 100%);
             transform: translateY(-1px);
         }
         
@@ -259,13 +259,13 @@
         .section-header .icon {
             width: 32px;
             height: 32px;
-            background: #3b82f6;
+            background: linear-gradient(135deg, #802B2B 0%, #5A1F1F 100%);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
-            color: white;
+            color: #FDF7F3;
         }
         
         .low-stock {
@@ -304,15 +304,15 @@
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(253, 247, 243, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(90, 31, 31, 0.2);
         }
         
         .gradient-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            background: linear-gradient(135deg, rgba(253, 247, 243, 0.15) 0%, rgba(248, 195, 59, 0.1) 100%);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(90, 31, 31, 0.2);
         }
         
         .button-3d {
@@ -379,22 +379,46 @@
     <div id="sidebar" class="sidebar">
         <div class="p-6 border-b border-gray-200">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-gradient-to-br from-pink-500 to-orange-500 rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                    <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Logo Yummy Ice Cream -->
-                        <circle cx="50" cy="35" r="15" fill="white" opacity="0.9"/>
-                        <circle cx="50" cy="50" r="12" fill="white" opacity="0.8"/>
-                        <circle cx="50" cy="63" r="10" fill="white" opacity="0.7"/>
-                        <rect x="47" y="70" width="6" height="20" fill="white" opacity="0.6" rx="3"/>
-                        <path d="M35 25 Q50 15 65 25" stroke="white" stroke-width="3" fill="none" opacity="0.8"/>
-                        <circle cx="42" cy="30" r="2" fill="#ff6b6b"/>
-                        <circle cx="58" cy="30" r="2" fill="#4ecdc4"/>
-                        <circle cx="50" cy="40" r="2" fill="#ffe66d"/>
+                <!-- Bloc du logo -->
+                <div class="w-12 h-12 bg-gradient-to-br from-[#C47D4E] to-[#E6A45B] rounded-xl flex items-center justify-center mr-3 shadow-lg overflow-hidden">
+                    <!-- Logo SVG Yummy Ice Cream -->
+                    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Fond du cercle -->
+                        <circle cx="50" cy="50" r="48" fill="#C47D4E" stroke="#5A1F1F" stroke-width="2"/>
+                        
+                        <!-- Cornet de glace -->
+                        <path d="M35 65 L50 85 L65 65 Z" fill="#E6A45B" stroke="#802B2B" stroke-width="1.5"/>
+                        <path d="M40 65 L45 75 M50 65 L50 80 M60 65 L55 75" stroke="#802B2B" stroke-width="1" opacity="0.6"/>
+                        
+                        <!-- Boules de glace -->
+                        <!-- Boule vanille (bas) -->
+                        <circle cx="50" cy="58" r="12" fill="#F8C33B" stroke="#802B2B" stroke-width="1"/>
+                        <circle cx="47" cy="55" r="2" fill="#FDF7F3" opacity="0.8"/>
+                        
+                        <!-- Boule fraise (milieu) -->
+                        <circle cx="50" cy="42" r="11" fill="#F17A99" stroke="#802B2B" stroke-width="1"/>
+                        <circle cx="52" cy="39" r="1.5" fill="#FDF7F3" opacity="0.9"/>
+                        <circle cx="48" cy="44" r="1" fill="#802B2B" opacity="0.6"/>
+                        
+                        <!-- Boule chocolat (haut) -->
+                        <circle cx="50" cy="28" r="10" fill="#5A1F1F" stroke="#802B2B" stroke-width="1"/>
+                        <circle cx="48" cy="25" r="1.5" fill="#802B2B" opacity="0.8"/>
+                        
+                        <!-- Cerise sur le dessus -->
+                        <circle cx="50" cy="18" r="3" fill="#802B2B"/>
+                        <path d="M50 15 Q52 12 54 14" stroke="#5A1F1F" stroke-width="1.5" fill="none"/>
+                        
+                        <!-- Paillettes et détails -->
+                        <circle cx="42" cy="30" r="1" fill="#F8C33B" opacity="0.7"/>
+                        <circle cx="58" cy="35" r="1" fill="#FDF7F3" opacity="0.8"/>
+                        <circle cx="45" cy="50" r="1" fill="#802B2B" opacity="0.6"/>
+                        <circle cx="55" cy="52" r="1" fill="#F17A99" opacity="0.7"/>
                     </svg>
                 </div>
+                <!-- Texte à côté -->
                 <div>
-                    <h1 class="text-lg font-bold text-gray-800">Yummy Ice Cream</h1>
-                    <p class="text-sm text-gray-500">Gestion moderne</p>
+                    <h1 class="text-lg font-bold text-[#5A1F1F]">Yummy Ice Cream</h1>
+                    <p class="text-sm text-[#802B2B]">Gestion moderne</p>
                 </div>
             </div>
         </div>
@@ -504,7 +528,7 @@
         <div id="git-config-section" class="section hidden">
             <div class="glass-effect rounded-2xl p-6 mb-6 fade-in">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                    <span class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">⚙️</span>
+                    <span class="w-8 h-8 bg-gradient-to-br from-[#F8C33B] to-[#F17A99] rounded-lg flex items-center justify-center mr-3">⚙️</span>
                     Configuration Git
                 </h2>
                 
@@ -586,7 +610,7 @@
             <div id="dashboard-section" class="section">
                 <div class="glass-effect rounded-2xl p-6 mb-6 fade-in">
                     <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                        <span class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">📊</span>
+                        <span class="w-8 h-8 bg-gradient-to-br from-[#802B2B] to-[#5A1F1F] rounded-lg flex items-center justify-center mr-3">📊</span>
                         Tableau de bord
                     </h2>
 
@@ -670,7 +694,7 @@
             <div id="products-section" class="section hidden">
                 <div class="glass-effect rounded-2xl p-6 mb-6 fade-in">
                     <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                        <span class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">📦</span>
+                        <span class="w-8 h-8 bg-gradient-to-br from-[#F17A99] to-[#F8C33B] rounded-lg flex items-center justify-center mr-3">📦</span>
                         Gestion des Produits
                     </h2>
                     
@@ -701,7 +725,7 @@
         <div id="stock-section" class="section hidden">
             <div class="glass-effect rounded-2xl p-6 mb-6 fade-in">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                    <span class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center mr-3">📋</span>
+                    <span class="w-8 h-8 bg-gradient-to-br from-[#E6A45B] to-[#C47D4E] rounded-lg flex items-center justify-center mr-3">📋</span>
                     Gestion du Stock
                 </h2>
                 
@@ -744,7 +768,7 @@
         <div id="orders-section" class="section hidden">
             <div class="glass-effect rounded-2xl p-6 mb-6 fade-in">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                    <span class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">🛒</span>
+                    <span class="w-8 h-8 bg-gradient-to-br from-[#F17A99] to-[#802B2B] rounded-lg flex items-center justify-center mr-3">🛒</span>
                     Nouvelle Commande
                 </h2>
                 
@@ -803,7 +827,7 @@
         <div id="invoices-section" class="section hidden">
             <div class="glass-effect rounded-2xl p-6 fade-in">
                 <h2 class="text-2xl font-bold text-white mb-6 no-print flex items-center">
-                    <span class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">📄</span>
+                    <span class="w-8 h-8 bg-gradient-to-br from-[#F8C33B] to-[#E6A45B] rounded-lg flex items-center justify-center mr-3">📄</span>
                     Liste des Factures
                 </h2>
                 
@@ -814,11 +838,11 @@
                             <p class="text-white/80 text-sm">📄 Total factures</p>
                         </div>
                         <div class="gradient-card p-4 rounded-xl">
-                            <p class="text-2xl font-bold text-green-300" id="total-invoices-amount">0 Ar</p>
+                            <p class="text-2xl font-bold text-[#F8C33B]" id="total-invoices-amount">0 Ar</p>
                             <p class="text-white/80 text-sm">💰 Montant total</p>
                         </div>
                         <div class="gradient-card p-4 rounded-xl">
-                            <p class="text-2xl font-bold text-blue-300" id="monthly-invoices-count">0</p>
+                            <p class="text-2xl font-bold text-[#F17A99]" id="monthly-invoices-count">0</p>
                             <p class="text-white/80 text-sm">📅 Ce mois</p>
                         </div>
                     </div>
@@ -847,7 +871,7 @@
         <div id="expenses-section" class="section hidden">
             <div class="glass-effect rounded-2xl p-6 mb-6 fade-in">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                    <span class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center mr-3">💰</span>
+                    <span class="w-8 h-8 bg-gradient-to-br from-[#802B2B] to-[#5A1F1F] rounded-lg flex items-center justify-center mr-3">💰</span>
                     Gestion des Dépenses
                 </h2>
                 
@@ -922,7 +946,7 @@
         <div id="reports-section" class="section hidden">
             <div class="glass-effect rounded-2xl p-6 fade-in">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                    <span class="w-8 h-8 bg-gray-600 rounded-lg flex items-center justify-center mr-3">📈</span>
+                    <span class="w-8 h-8 bg-gradient-to-br from-[#C47D4E] to-[#E6A45B] rounded-lg flex items-center justify-center mr-3">📈</span>
                     Rapports et Analyses
                 </h2>
                 
@@ -2302,23 +2326,44 @@
             content.innerHTML = `
                 <div class="text-center mb-8">
                     <div class="flex justify-center mb-4">
-                        <div class="w-20 h-20 bg-gradient-to-br from-pink-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
-                            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Logo Yummy Ice Cream -->
-                                <circle cx="50" cy="35" r="15" fill="white" opacity="0.9"/>
-                                <circle cx="50" cy="50" r="12" fill="white" opacity="0.8"/>
-                                <circle cx="50" cy="63" r="10" fill="white" opacity="0.7"/>
-                                <rect x="47" y="70" width="6" height="20" fill="white" opacity="0.6" rx="3"/>
-                                <path d="M35 25 Q50 15 65 25" stroke="white" stroke-width="3" fill="none" opacity="0.8"/>
-                                <circle cx="42" cy="30" r="2" fill="#ff6b6b"/>
-                                <circle cx="58" cy="30" r="2" fill="#4ecdc4"/>
-                                <circle cx="50" cy="40" r="2" fill="#ffe66d"/>
+                        <div class="w-20 h-20 bg-gradient-to-br from-[#C47D4E] to-[#E6A45B] rounded-2xl flex items-center justify-center shadow-lg">
+                            <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Fond du cercle -->
+                                <circle cx="50" cy="50" r="48" fill="#C47D4E" stroke="#5A1F1F" stroke-width="2"/>
+                                
+                                <!-- Cornet de glace -->
+                                <path d="M35 65 L50 85 L65 65 Z" fill="#E6A45B" stroke="#802B2B" stroke-width="1.5"/>
+                                <path d="M40 65 L45 75 M50 65 L50 80 M60 65 L55 75" stroke="#802B2B" stroke-width="1" opacity="0.6"/>
+                                
+                                <!-- Boules de glace -->
+                                <!-- Boule vanille (bas) -->
+                                <circle cx="50" cy="58" r="12" fill="#F8C33B" stroke="#802B2B" stroke-width="1"/>
+                                <circle cx="47" cy="55" r="2" fill="#FDF7F3" opacity="0.8"/>
+                                
+                                <!-- Boule fraise (milieu) -->
+                                <circle cx="50" cy="42" r="11" fill="#F17A99" stroke="#802B2B" stroke-width="1"/>
+                                <circle cx="52" cy="39" r="1.5" fill="#FDF7F3" opacity="0.9"/>
+                                <circle cx="48" cy="44" r="1" fill="#802B2B" opacity="0.6"/>
+                                
+                                <!-- Boule chocolat (haut) -->
+                                <circle cx="50" cy="28" r="10" fill="#5A1F1F" stroke="#802B2B" stroke-width="1"/>
+                                <circle cx="48" cy="25" r="1.5" fill="#802B2B" opacity="0.8"/>
+                                
+                                <!-- Cerise sur le dessus -->
+                                <circle cx="50" cy="18" r="3" fill="#802B2B"/>
+                                <path d="M50 15 Q52 12 54 14" stroke="#5A1F1F" stroke-width="1.5" fill="none"/>
+                                
+                                <!-- Paillettes et détails -->
+                                <circle cx="42" cy="30" r="1" fill="#F8C33B" opacity="0.7"/>
+                                <circle cx="58" cy="35" r="1" fill="#FDF7F3" opacity="0.8"/>
+                                <circle cx="45" cy="50" r="1" fill="#802B2B" opacity="0.6"/>
+                                <circle cx="55" cy="52" r="1" fill="#F17A99" opacity="0.7"/>
                             </svg>
                         </div>
                     </div>
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">YUMMY ICE CREAM</h2>
-                    <p class="text-gray-600 text-lg">FACTURE #${order.id}</p>
-                    <p class="text-gray-600">Date: ${order.date}</p>
+                    <h2 class="text-3xl font-bold text-[#5A1F1F] mb-2">YUMMY ICE CREAM</h2>
+                    <p class="text-[#802B2B] text-lg font-semibold">FACTURE #${order.id}</p>
+                    <p class="text-[#802B2B]">Date: ${order.date}</p>
                 </div>
                 
                 <div class="grid md:grid-cols-2 gap-8 mb-8">
@@ -2780,5 +2825,5 @@
             showNotification('Rapport généré', `Rapport pour ${new Date(month + '-01').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`, 'success');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97233df1041693c9',t:'MTc1NTcwNzA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'972a05bd36f673d2',t:'MTc1NTc3ODE3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
